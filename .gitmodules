@@ -1,0 +1,4 @@
+[submodule "include/RIOT"]
+    path = include/RIOT
+    url = https://github.com/RIOT-OS/RIOT.git
+    ignore = all
