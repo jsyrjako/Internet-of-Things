@@ -1,71 +1,91 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <lpsxxx.h>
-#include <isl29020.h>
+#include "ztimer.h"
 
-#define ISL29020_ADDR 0x44
-#define LPS331AP_ADDR 0x5c
+#include "lpsxxx.h"
+#include "lpsxxx_params.h"
 
-struct lps331ap_params_t
-{
-    i2c_t i2c = LPSXXX_PARAM_I2C; // I2C bus the sensor is connected to
-    uint8_t addr = LPS331AP_ADDR; // the device's address on the bus
-    lpsxxx_rate_t rate = LPSXXX_PARAM_RATE ; // tell sensor to sample with this rate
-};
+#include "isl29020.h"
+
+// MQTT message parameters
+#define MSG_LEN (1040u)
+#define MSG "{ 'temperature': %d, 'pressure': %d, 'light': %d }"
+
+// Sensors
+static lpsxxx_t lpsxxx;
+static isl29020_t isl29020;
 
 int init_sensors(void)
 {
-
-    struct lps331ap_params_t sensor_params;
-
-    if (lps331ap_init(&sensor_params) != 0) {
+    // Initialize LPS331AP sensor
+    if (lpsxxx_init(&lpsxxx, &lpsxxx_params[0]) != LPSXXX_OK)
+    {
         perror("Failed to initialize sensor LPS331AP");
     }
 
+    // Initialize ISL29020 sensor
+    if (isl29020_init(&isl29020, &isl29020_params[0]) != 0)
+    {
+        perror("Failed to initialize sensor LPS331AP");
+    }
+}
 
+int read_temperature()
+{
+    uint16_t temp;
+    if (lpsxxx_read_temp(&lpsxxx, &temp) != LPSXXX_OK)
+    {
+        perror("Failed to read temperature");
+    }
+    else
+    {
+        printf("Temperature: %i.%u°C\n", (temp / 100), (temp % 100));
+    }
+    ztimer_sleep(ZTIMER_MSEC, 500);
+    return temp;
+}
+
+int read_pressure()
+{
+    uint16_t pres;
+    if (lpsxxx_read_pres(&pres) != LPSXXX_OK)
+    {
+        perror("Failed to read pressure");
+    }
+    else
+    {
+        printf("Pressure: %uhPa\n", pres);
+    }
+    ztimer_sleep(ZTIMER_MSEC, 500);
+    return pres;
+}
+
+int read_light()
+{
+    uint16_t light = isl29020_read(&isl29020);
+    if (light == -1)
+    {
+        perror("Failed to read light");
+    }
+    else
+    {
+        printf("Light: %d\n", light);
+    }
+    ztimer_sleep(ZTIMER_MSEC, 500);
+    return light;
 }
 
 int main(void)
 {
+    init_sensors();
 
+    while (1)
+    {
+        read_temperature();
+        read_pressure();
+        read_light();
+        ztimer_sleep(ZTIMER_MSEC, 5000);
+    }
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void read_sensor_data(int fd, int addr, int reg)
-// {
-//     // Set I2C slave address
-//     if (ioctl(fd, I2C_SLAVE, addr) < 0) {
-//         perror("Failed to set I2C slave address");
-//         exit(1);
-//     }
-
-//     // Read data from sensor
-//     buf[0] = reg;
-//     if (write(fd, buf, 1) != 1) {
-//         perror("Failed to write to I2C bus");
-//         exit(1);
-//     }
-
-//     if (read(fd, buf, 2) != 2) {
-//         perror("Failed to read from I2C bus");
-//         exit(1);
-//     }
-
-//     int data = (buf[0] << 8) | buf[1];
-//     printf("Data: %d\n", data);
-// }

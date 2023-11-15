@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt
+import json
+import boto3
 
 
 # set username and password for iot-lab MQTT broker
@@ -8,14 +10,38 @@ password = "your_password"
 ca_cert_path = "./iot-lab-ca.pem"
 
 
+# AWS dynamoDB
+dynamoDB = boto3.client('dynamodb')
+table_name = "your_table_name"
+
+
 # Define callback functions for MQTT events
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     client.subscribe("iotlab/<iot2023oulu21>/test")
 
 
-def on_message(client, userdata, msg):
+# Save MQTT message to database
+def on_message(msg):
     print(msg.topic + " " + str(msg.payload))
+
+    # Extract MQTT message from payload
+    mqtt_msg = json.loads(msg.payload)
+
+    # Insert MQTT message to database
+    responce = dynamoDB.put_item(
+        TableName=table_name,
+        Item={
+            'timestamp': {'S': mqtt_msg['timestamp']},
+            'temperature': {'N': mqtt_msg['temperature']},
+            'pressure': {'N': mqtt_msg['pressure']},
+            'light': {'N': mqtt_msg['light']},
+        }
+    )
+    print(responce)
+
+
+
 
 
 # Create MQTT client instance
