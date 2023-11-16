@@ -1,7 +1,4 @@
 import paho.mqtt.client as mqtt
-import json
-import boto3
-
 
 # set username and password for iot-lab MQTT broker
 username = "your_username"
