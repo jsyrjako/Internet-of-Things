@@ -1,15 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ztimer.h"
+#include "MQTTClient.h"
 
 #include "lpsxxx.h"
 #include "lpsxxx_params.h"
 
 #include "isl29020.h"
 
-// MQTT message parameters
-#define MSG_LEN (1040u)
-#define MSG "{ 'temperature': %d, 'pressure': %d, 'light': %d }"
+// MQTT connection parameters
+MQTTClient client;
+static const char *URL = "mqtt.iot-lab.info:8883";
+
+
+
+rc = MQTTClient_create(&client, URL, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+
+MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+conn_opts.keepAliveInterval = 10;
+conn_opts.cleansession = 1;
+conn_opts.username = USERNAME;
+conn_opts.password = PASSWORD;
+rc = MQTTClient_connect(client, &conn_opts);
 
 // Sensors
 static lpsxxx_t lpsxxx;

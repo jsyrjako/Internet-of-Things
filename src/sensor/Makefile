@@ -8,6 +8,6 @@ USEMODULE += isl29020
 
 FEATURES_REQUIRED += periph_uart
 
-RIOTBASE ?= $(CURDIR)/riot/RIOT
+RIOTBASE ?= $(CURDIR)/../../include/RIOT
 
 include $(RIOTBASE)/Makefile.include
