@@ -16,8 +16,8 @@ ifeq (,$(filter ethos slip cdc-ecm wifi,$(UPLINK)))
 endif
 
 # Set the SSID and password of your WiFi network here
-WIFI_SSID ?= "Your_WiFi_name"
-WIFI_PASS ?= "Your_secure_password"
+# WIFI_SSID ?= "Your_WiFi_name"
+# WIFI_PASS ?= "Your_secure_password"
 
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
@@ -43,11 +43,11 @@ USEMODULE += ps
 #USEMODULE += gnrc_ipv6_nib_dns     # include RDNSS option handling
 
 # When using a WiFi uplink we should use DHCPv6
-ifeq (wifi,$(UPLINK))
-  USE_DHCPV6 ?= 1
-else
-  USE_DHCPV6 ?= 0
-endif
+# ifeq (wifi,$(UPLINK))
+#   USE_DHCPV6 ?= 1
+# else
+#   USE_DHCPV6 ?= 0
+# endif
 
 ifeq (1,$(USE_DHCPV6))
   # include DHCPv6 client for 6LoWPAN border router
