@@ -5,7 +5,7 @@ APPLICATION = gnrc_border_router
 BOARD ?= samr21-xpro
 
 # This has to be the absolute path to the RIOT base directory:
-RIOTBASE ?= $(CURDIR)/../..
+RIOTBASE ?= $(CURDIR)/../../../include/RIOT
 
 # Default to using ethos for providing the uplink when not on native
 UPLINK ?= ethos
