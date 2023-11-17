@@ -15,8 +15,8 @@ iotlab-experiment submit -n riot_mqtt -d 60 -l 1,archi=a8:at86rf231+site=grenobl
 iotlab-experiment wait
 # iotlab-ssh --verbose wait-for-boot
 
-target_address=$(iotlab-experiment --jmespath="items[*].network_address | sort(@)" get --nodes | tr -d '"')
-target=$(echo $target_node | cut -d'.' -f1)
+target_address=$(iotlab-experiment --jmespath="items[*].network_address | sort(@)" get --nodes | tr -d '"[] ')
+target=$(echo $target_address[0] | cut -d'.' -f1)
 target_node="node-$target"
 
 scp ./config.conf root@$target_node:~/
