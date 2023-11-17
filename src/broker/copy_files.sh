@@ -12,5 +12,6 @@ ssh_user=$1
 
 scp ./configure1.sh $ssh_user@grenoble.iot-lab.info:~/
 scp ./config.conf $ssh_user@grenoble.iot-lab.info:~/
-ssh $ssh_user@grenoble.iot-lab.info
+ssh -T $ssh_user@grenoble.iot-lab.info << EOF
 sh ./configure1.sh
+EOF

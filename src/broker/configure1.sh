@@ -22,12 +22,14 @@ target_node="node-$target"
 echo "Waiting 45s for the node to boot..."
 sleep 45s
 scp ./config.conf root@$target_node:~/
-sleep 1s
-ssh root@$target_node
-sleep 1s
-
-# Print the global IPv6 address of the node
+ssh -T root@$target_node << EOF
 ip -6 -o addr show eth0 | grep 'global'
 
-# Start the MQTT broker
 broker_mqtts config.conf
+EOF
+
+# Print the global IPv6 address of the node
+
+
+# Start the MQTT broker
+
