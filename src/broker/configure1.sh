@@ -16,7 +16,7 @@ iotlab-experiment wait
 # iotlab-ssh --verbose wait-for-boot
 
 target_address=$(iotlab-experiment --jmespath="items[*].network_address | sort(@)" get --nodes | tr -d '"[] ')
-target=$(echo $target_address[0] | cut -d'.' -f1)
+target=$(echo $target_address | cut -d'.' -f1)
 target_node="node-$target"
 
 scp ./config.conf root@$target_node:~/
