@@ -16,10 +16,17 @@ iotlab-experiment wait
 # iotlab-ssh --verbose wait-for-boot
 
 target_address=$(iotlab-experiment --jmespath="items[*].network_address | sort(@)" get --nodes | tr -d '"[] ')
+timeout 1 bash -c
 target=$(echo $target_address | cut -d'.' -f1)
+timeout 1 bash -c
 target_node="node-$target"
+timeout 1 bash -c
 
 scp ./config.conf root@$target_node:~/
+timeout 1 bash -c
+echo "Press [Enter] to continue..."
+read -p ""
+timeout 1 bash -c
 ssh root@$target_node
 
 # Print the global IPv6 address of the node
