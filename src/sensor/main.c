@@ -10,9 +10,7 @@
 
 // MQTT connection parameters
 MQTTClient client;
-static const char *URL = "mqtt.iot-lab.info:8883";
-
-
+static const char *URL = "<node's address>:1886";
 
 rc = MQTTClient_create(&client, URL, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
