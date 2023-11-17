@@ -10,16 +10,15 @@ fi
 # Define the ssh_user and create target_node
 ssh_user=$1
 
-iotlab-auth -u $ssh_user
+# iotlab-auth -u $ssh_user
 iotlab-experiment submit -n riot_mqtt -d 60 -l 1,archi=a8:at86rf231+site=grenoble
 iotlab-experiment wait
 # iotlab-ssh --verbose wait-for-boot
 
 target_node=$(iotlab-experiment --jmespath="items[*].network_address | sort(@)" get --nodes)
-target=${target_node[0]}
+target=$(echo $target_node | cut -d'.' -f1)
 
-echo $target
-scp ./config.conf root@$target:~/
+scp ./config.conf root@node-$target:~/
 ssh root@$target
 
 # Print the global IPv6 address of the node
