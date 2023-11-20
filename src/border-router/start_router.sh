@@ -28,7 +28,7 @@ target_node="node-$target"
 echo "Target node:" $target_node
 
 # Connect to the border router node
-ssh root@$target_node << EOF
+ssh -T root@$target_node << EOF
 cd ~/A8/riot/RIOT/dist/tools/uhcpd
 make clean all
 cd ../ethos
