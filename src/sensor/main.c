@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ztimer.h"
+#include "thread.h"
 // #include "paho_mqtt.h"
 // #include "MQTTClient.h"
 
@@ -26,7 +27,7 @@
 // #define MQTTCLIENT_FAILURE -1
 // #define MQTTCLIENT_DISCONNECTED -3
 
-// #define MQTTVERSION_DEFAULT 0
+/* // #define MQTTVERSION_DEFAULT 0
 // #define MQTTProperties_initializer \
 //     {                              \
 //         0, 0, 0, NULL              \
@@ -39,7 +40,7 @@
 //     {                                                                            \
 //         {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer \
 //     }
-// #define MQTTCLIENT_PERSISTENCE_NONE   1
+// #define MQTTCLIENT_PERSISTENCE_NONE   1 */
 
 
 // Sensor parameters

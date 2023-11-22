@@ -5,6 +5,7 @@
         "paho_mqtt.h": "c",
         "MQTTClient.h": "c",
         "lpsxxx.h": "c",
-        "isl29020.h": "c"
+        "isl29020.h": "c",
+        "thread.h": "c"
     }
 }
