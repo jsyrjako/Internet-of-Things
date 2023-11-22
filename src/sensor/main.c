@@ -39,6 +39,8 @@
     {                                                                            \
         {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer \
     }
+#define MQTTCLIENT_PERSISTENCE_NONE   1
+
 
 // Sensor parameters
 static lpsxxx_param_t lps_params = {
@@ -84,7 +86,7 @@ void init_sensors(void)
     return 0;
 }
 
-int read_temperature()
+int read_temperature(void)
 {
     uint16_t temp;
     if (lpsxxx_read_temp(&lpsxxx, &temp) != LPSXXX_OK)
@@ -99,10 +101,10 @@ int read_temperature()
     return temp;
 }
 
-int read_pressure()
+int read_pressure(void)
 {
     uint16_t pres;
-    if (lpsxxx_read_pres(&pres) != LPSXXX_OK)
+    if (lpsxxx_read_pres(&lpsxxx, &pres) != LPSXXX_OK)
     {
         perror("Failed to read pressure");
     }
@@ -114,9 +116,9 @@ int read_pressure()
     return pres;
 }
 
-int read_light()
+int read_light(void)
 {
-    uint16_t light = isl29020_read(&isl29020);
+    int light = isl29020_read(&isl29020);
     if (light == -1)
     {
         perror("Failed to read light");
