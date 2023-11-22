@@ -3,6 +3,9 @@ APPLICATION = iot2023joonajanne
 BOARD ?= iotlab-m3
 
 USEMODULE += ztimer_msec
+USEMODULE += ztimer_usec
+USEMODULE += ztimer_sec
+USEMODULE += ztimer_no_periph_rtt
 USEMODULE += lps331ap
 USEMODULE += isl29020
 #USEMODULE += ipv6_addr
