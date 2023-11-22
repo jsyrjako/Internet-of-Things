@@ -52,7 +52,7 @@ static lpsxxx_params_t lps_params = {
 
 // Sensor parameters
 static isl29020_params_t isl_params = {
-    .i2c = &isl29020_params[0].i2c,
+    .i2c = isl29020_params[0].i2c,
     .addr = isl29020_params[0].addr,
     .mode = ISL29020_MODE_AMBIENT,
     .range = ISL29020_RANGE_1K,
