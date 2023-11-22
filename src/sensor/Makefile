@@ -14,6 +14,8 @@ FEATURES_REQUIRED += periph_i2c
 
 RIOTBASE ?= ../../include/RIOT
 
+CFLAGS += -Werror
+
 #EXTERNAL_MODULE_DIRS += $(CURDIR)/../../include/paho.mqtt.embedded-c/
 
 include $(RIOTBASE)/Makefile.include
