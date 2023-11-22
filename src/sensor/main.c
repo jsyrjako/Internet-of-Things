@@ -2,19 +2,19 @@
 #include <stdlib.h>
 #include "ztimer.h"
 // #include "paho_mqtt.h"
-#include "MQTTClient.h"
+// #include "MQTTClient.h"
 
 #include "lpsxxx.h"
 #include "lpsxxx_params.h"
 
 #include "isl29020.h"
 
-#define URL "ssl://eu2.cloud.thethings.industries:1883"
-#define CLIENTID "1"
-#define TOPIC "devices/1/data/"
-#define QOS 1
-#define USERNAME "iot-2023@di-ttn-iot-2023"
-#define PASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
+// #define URL "ssl://eu2.cloud.thethings.industries:1883"
+// #define CLIENTID "1"
+// #define TOPIC "devices/1/data/"
+// #define QOS 1
+// #define USERNAME "iot-2023@di-ttn-iot-2023"
+// #define PASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 
 // Set up variables
 // char topic[256];
@@ -22,24 +22,24 @@
 // static const int QOS = 1;
 
 // MQTTCLIENT
-#define MQTTCLIENT_SUCCESS 0
-#define MQTTCLIENT_FAILURE -1
-#define MQTTCLIENT_DISCONNECTED -3
+// #define MQTTCLIENT_SUCCESS 0
+// #define MQTTCLIENT_FAILURE -1
+// #define MQTTCLIENT_DISCONNECTED -3
 
-#define MQTTVERSION_DEFAULT 0
-#define MQTTProperties_initializer \
-    {                              \
-        0, 0, 0, NULL              \
-    }
-#define MQTTClient_connectOptions_initializer                                                                                          \
-    {                                                                                                                                  \
-        {'M', 'Q', 'T', 'C'}, 6, 60, 1, 1, NULL, NULL, NULL, 30, 0, NULL, 0, NULL, MQTTVERSION_DEFAULT, {NULL, 0, 0}, {0, NULL}, -1, 0 \
-    }
-#define MQTTClient_message_initializer                                           \
-    {                                                                            \
-        {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer \
-    }
-#define MQTTCLIENT_PERSISTENCE_NONE   1
+// #define MQTTVERSION_DEFAULT 0
+// #define MQTTProperties_initializer \
+//     {                              \
+//         0, 0, 0, NULL              \
+//     }
+// #define MQTTClient_connectOptions_initializer                                                                                          \
+//     {                                                                                                                                  \
+//         {'M', 'Q', 'T', 'C'}, 6, 60, 1, 1, NULL, NULL, NULL, 30, 0, NULL, 0, NULL, MQTTVERSION_DEFAULT, {NULL, 0, 0}, {0, NULL}, -1, 0 \
+//     }
+// #define MQTTClient_message_initializer                                           \
+//     {                                                                            \
+//         {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer \
+//     }
+// #define MQTTCLIENT_PERSISTENCE_NONE   1
 
 
 // Sensor parameters
@@ -131,42 +131,42 @@ int read_light(void)
     return light;
 }
 
-char *create_mqtt_message(uint16_t temp, uint16_t pres, uint16_t light)
-{
-    char *message = malloc(100);
-    sprintf(message, "{\"temperature\": %i.%u, \"pressure\": %uhPa, \"light\": %d}", (temp), (temp), pres, light);
-    printf("Message: %s\n", message);
-    return message;
-}
+// char *create_mqtt_message(uint16_t temp, uint16_t pres, uint16_t light)
+// {
+//     char *message = malloc(100);
+//     sprintf(message, "{\"temperature\": %i.%u, \"pressure\": %uhPa, \"light\": %d}", (temp), (temp), pres, light);
+//     printf("Message: %s\n", message);
+//     return message;
+// }
 
-void publish_message(char *message)
-{
-    // const char* topic = "devices/1/data/";
-    // MQTTClient_subscribe(client, topic, qos);
-    // printf("subscribed to %s \n", topic);
+// void publish_message(char *message)
+// {
+//     // const char* topic = "devices/1/data/";
+//     // MQTTClient_subscribe(client, topic, qos);
+//     // printf("subscribed to %s \n", topic);
 
-    // // payload the content of your message
-    // char* payload = message;
-    // int payloadlen = strlen(payload);
-    // MQTTClient_deliveryToken dt;
-    // MQTTClient_publish(client, topic, payloadlen, payload, qos, retained, &dt);
-    // printf("published to %s \n", topic);
+//     // // payload the content of your message
+//     // char* payload = message;
+//     // int payloadlen = strlen(payload);
+//     // MQTTClient_deliveryToken dt;
+//     // MQTTClient_publish(client, topic, payloadlen, payload, qos, retained, &dt);
+//     // printf("published to %s \n", topic);
 
-    int rc;
-    MQTTClient_message pubmsg = MQTTClient_message_initializer;
-    MQTTClient_deliveryToken token;
-    pubmsg.payload = message;
-    pubmsg.payloadlen = strlen(message);
-    pubmsg.qos = QOS;
-    pubmsg.retained = 0;
+//     int rc;
+//     MQTTClient_message pubmsg = MQTTClient_message_initializer;
+//     MQTTClient_deliveryToken token;
+//     pubmsg.payload = message;
+//     pubmsg.payloadlen = strlen(message);
+//     pubmsg.qos = QOS;
+//     pubmsg.retained = 0;
 
-    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
-    printf("Waiting for up to %d seconds for publication of %s\n"
-           "on topic %s for client with ClientID: %s\n",
-           (int)(TIMEOUT / 1000), PAYLOAD, TOPIC, CLIENTID);
-    rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
-    printf("Message with delivery token %d delivered\n", token);
-}
+//     MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
+//     printf("Waiting for up to %d seconds for publication of %s\n"
+//            "on topic %s for client with ClientID: %s\n",
+//            (int)(TIMEOUT / 1000), PAYLOAD, TOPIC, CLIENTID);
+//     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
+//     printf("Message with delivery token %d delivered\n", token);
+// }
 
 static void *sensor_thread(void *arg)
 {
@@ -187,28 +187,27 @@ static void *sensor_thread(void *arg)
 }
 
 // Connect to MQTTClient
-void connect_mqtt()
-{
-    MQTTClient client;
-    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-    int rc;
-    // conn_opts.keepAliveInterval = 10;
-    // conn_opts.cleansession = 1;
-    conn_opts.username = USERNAME;
-    conn_opts.password = PASSWORD;
+// void connect_mqtt()
+// {
+//     MQTTClient client;
+//     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+//     int rc;
+//     // conn_opts.keepAliveInterval = 10;
+//     // conn_opts.cleansession = 1;
+//     conn_opts.username = USERNAME;
+//     conn_opts.password = PASSWORD;
 
-    MQTTClient_create(&client, URL, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", rc);
-        exit(EXIT_FAILURE);
-    }
-}
+//     MQTTClient_create(&client, URL, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+//     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+//     {
+//         printf("Failed to connect, return code %d\n", rc);
+//         exit(EXIT_FAILURE);
+//     }
+// }
 
 int main(void)
 {
-    char *message;
-    connect_mqtt();
+    // connect_mqtt();
 
     if (init_sensors() == 0)
     {
