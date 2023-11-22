@@ -7,6 +7,7 @@
         "lpsxxx.h": "c",
         "isl29020.h": "c",
         "thread.h": "c",
-        "lpsxxx_params.h": "c"
+        "lpsxxx_params.h": "c",
+        "isl29020_params.h": "c"
     }
 }

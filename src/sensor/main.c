@@ -9,6 +9,7 @@
 #include "lpsxxx_params.h"
 
 #include "isl29020.h"
+#include "isl29020_params.h"
 
 // #define URL "ssl://eu2.cloud.thethings.industries:1883"
 // #define CLIENTID "1"
@@ -47,6 +48,14 @@ static lpsxxx_params_t lps_params = {
     .i2c = lpsxxx_params[0].i2c,
     .addr = lpsxxx_params[0].addr,
     .rate = LPSXXX_RATE_1HZ,
+};
+
+// Sensor parameters
+static isl29020_params_t isl29020_params = {
+    .i2c = &isl29020_params[0].i2c,
+    .addr = isl29020_params[0].addr,
+    .mode = ISL29020_MODE_AMBIENT,
+    .range = ISL29020_RANGE_1K,
 };
 
 // Sensors
@@ -181,7 +190,9 @@ static void *sensor_thread(void *arg)
         temp = read_temperature();
         pres = read_pressure();
         light = read_light();
-
+        printf("Temperature: %i.%u°C\n", (temp / 100), (temp % 100));
+        printf("Pressure: %uhPa\n", pres);
+        printf("Light: %d\n", light);
         // message = create_mqtt_message(temp, pres, light);
         // publish_message(message);
         ztimer_sleep(ZTIMER_MSEC, 5000);
