@@ -2,3 +2,7 @@
     path = include/RIOT
     url = https://github.com/RIOT-OS/RIOT.git
     ignore = all
+
+[submodule "include/paho.mqtt.embedded-c"]
+    path = include/paho.mqtt.embedded-c
+    url = https://github.com/eclipse/paho.mqtt.embedded-c

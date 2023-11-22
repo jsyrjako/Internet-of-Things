@@ -68,7 +68,7 @@ static char stack_size[THREAD_STACKSIZE_DEFAULT];
 //     return node_id;
 // }
 
-void init_sensors(void)
+int init_sensors(void)
 {
     // Initialize LPS331AP sensor
     if (lpsxxx_init(&lpsxxx, &lps_params) != LPSXXX_OK)
