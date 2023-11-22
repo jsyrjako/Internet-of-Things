@@ -42,13 +42,12 @@
 //     }
 // #define MQTTCLIENT_PERSISTENCE_NONE   1 */
 
-
 // Sensor parameters
-static lpsxxx_param_t lps_params = {
+static lpsxxx_params_t lps_params = {
     .i2c = lpsxxx_params[0].i2c,
     .addr = lpsxxx_params[0].addr,
     .rate = LPSXXX_RATE_1HZ,
-}
+};
 
 // Sensors
 static lpsxxx_t lpsxxx;
@@ -89,7 +88,7 @@ int init_sensors(void)
 
 int read_temperature(void)
 {
-    uint16_t temp;
+    int16_t temp;
     if (lpsxxx_read_temp(&lpsxxx, &temp) != LPSXXX_OK)
     {
         perror("Failed to read temperature");
@@ -172,7 +171,10 @@ int read_light(void)
 static void *sensor_thread(void *arg)
 {
     (void)arg;
-    uint16_t temp, pres, light;
+    int16_t temp;
+    uint16_t pres;
+    int light;
+
     // char *message;
     while (1)
     {
