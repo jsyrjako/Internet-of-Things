@@ -102,11 +102,6 @@ int read_temperature(void)
     {
         perror("Failed to read temperature");
     }
-    else
-    {
-        printf("Temperature: %i.%u°C\n", (temp / 100), (temp % 100));
-    }
-    ztimer_sleep(ZTIMER_MSEC, 500);
     return temp;
 }
 
@@ -117,11 +112,6 @@ int read_pressure(void)
     {
         perror("Failed to read pressure");
     }
-    else
-    {
-        printf("Pressure: %uhPa\n", pres);
-    }
-    ztimer_sleep(ZTIMER_MSEC, 500);
     return pres;
 }
 
@@ -132,11 +122,6 @@ int read_light(void)
     {
         perror("Failed to read light");
     }
-    else
-    {
-        printf("Light: %d\n", light);
-    }
-    ztimer_sleep(ZTIMER_MSEC, 500);
     return light;
 }
 
