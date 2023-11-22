@@ -23,6 +23,12 @@
 // sprintf(topic, "devices/%s/data/", CLIENTID);
 // static const int QOS = 1;
 
+// MQTTCLIENT
+#define MQTTCLIENT_SUCCESS   0
+#define MQTTCLIENT_FAILURE   -1
+#define MQTTCLIENT_DISCONNECTED   -3
+
+
 
 // Sensors
 static lpsxxx_t lpsxxx;
@@ -124,13 +130,20 @@ void publish_message(char *message)
     // MQTTClient_publish(client, topic, payloadlen, payload, qos, retained, &dt);
     // printf("published to %s \n", topic);
 
+    int rc;
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
+    MQTTClient_deliveryToken token;
     pubmsg.payload = message;
     pubmsg.payloadlen = strlen(message);
     pubmsg.qos = QOS;
     pubmsg.retained = 0;
-    MQTTClient_publishMessage(client, topic, &pubmsg, NULL);
-    printf("Message published\n");
+
+    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
+     printf("Waiting for up to %d seconds for publication of %s\n"
+            "on topic %s for client with ClientID: %s\n",
+            (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+    rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
+    printf("Message with delivery token %d delivered\n", token);
 }
 
 static void *sensor_thread(void *arg)
