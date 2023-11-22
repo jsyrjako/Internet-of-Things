@@ -18,6 +18,7 @@
 
 5. Run the project:
     - ```tähän koodia :D```
+    - ```make BOARD=iotlab-m3 IOTLAB_NODE=auto flash term```
 
 ## Project description:
 
