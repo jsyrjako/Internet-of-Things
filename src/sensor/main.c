@@ -9,12 +9,12 @@
 
 #include "isl29020.h"
 
-#define URL         "ssl://eu2.cloud.thethings.industries:1883"
-#define CLIENTID    "1"
-#define TOPIC       "devices/1/data/"
-#define QOS         1
-#define USERNAME    "iot-2023@di-ttn-iot-2023"
-#define PASSWORD    "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
+#define URL "ssl://eu2.cloud.thethings.industries:1883"
+#define CLIENTID "1"
+#define TOPIC "devices/1/data/"
+#define QOS 1
+#define USERNAME "iot-2023@di-ttn-iot-2023"
+#define PASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 
 // Set up variables
 // char topic[256];
@@ -22,14 +22,23 @@
 // static const int QOS = 1;
 
 // MQTTCLIENT
-#define MQTTCLIENT_SUCCESS   0
-#define MQTTCLIENT_FAILURE   -1
-#define MQTTCLIENT_DISCONNECTED   -3
+#define MQTTCLIENT_SUCCESS 0
+#define MQTTCLIENT_FAILURE -1
+#define MQTTCLIENT_DISCONNECTED -3
 
-#define MQTTClient_connectOptions_initializer   { {'M', 'Q', 'T', 'C'}, 6, 60, 1, 1, NULL, NULL, NULL, 30, 0, NULL, 0, NULL, MQTTVERSION_DEFAULT, {NULL, 0, 0}, {0, NULL}, -1, 0}
-#define MQTTClient_message_initializer   { {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer }
-
-
+#define MQTTVERSION_DEFAULT 0
+#define MQTTProperties_initializer \
+    {                              \
+        0, 0, 0, NULL              \
+    }
+#define MQTTClient_connectOptions_initializer                                                                                          \
+    {                                                                                                                                  \
+        {'M', 'Q', 'T', 'C'}, 6, 60, 1, 1, NULL, NULL, NULL, 30, 0, NULL, 0, NULL, MQTTVERSION_DEFAULT, {NULL, 0, 0}, {0, NULL}, -1, 0 \
+    }
+#define MQTTClient_message_initializer                                           \
+    {                                                                            \
+        {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer \
+    }
 
 // Sensor parameters
 static lpsxxx_param_t lps_params = {
@@ -57,19 +66,22 @@ static char stack_size[THREAD_STACKSIZE_DEFAULT];
 //     return node_id;
 // }
 
-int init_sensors(void)
+void init_sensors(void)
 {
     // Initialize LPS331AP sensor
     if (lpsxxx_init(&lpsxxx, &lps_params) != LPSXXX_OK)
     {
         perror("Failed to initialize sensor LPS331AP");
+        return 1;
     }
 
     // Initialize ISL29020 sensor
     if (isl29020_init(&isl29020, &isl29020_params[0]) != 0)
     {
         perror("Failed to initialize sensor LPS331AP");
+        return 2;
     }
+    return 0;
 }
 
 int read_temperature()
@@ -148,8 +160,8 @@ void publish_message(char *message)
 
     MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
     printf("Waiting for up to %d seconds for publication of %s\n"
-            "on topic %s for client with ClientID: %s\n",
-            (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+           "on topic %s for client with ClientID: %s\n",
+           (int)(TIMEOUT / 1000), PAYLOAD, TOPIC, CLIENTID);
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
 }
@@ -191,15 +203,15 @@ void connect_mqtt()
     }
 }
 
-
 int main(void)
 {
-    init_sensors();
     char *message;
     connect_mqtt();
 
-    // Create thread for sensor readings
-    thread_create(stack_size, sizeof(stack_size), THREAD_PRIORITY_MAIN - 1, 0, sensor_thread, NULL, "sensor_thread");
+    if (init_sensors() == 0)
+    {
+        thread_create(stack_size, sizeof(stack_size), THREAD_PRIORITY_MAIN - 1, 0, sensor_thread, NULL, "sensor_thread");
+    }
 
     return 0;
 }
