@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "mqttclient.h": "c"
+        "mqttclient.h": "c",
+        "paho_mqtt.h": "c",
+        "MQTTClient.h": "c",
+        "lpsxxx.h": "c",
+        "isl29020.h": "c"
     }
 }

@@ -16,8 +16,6 @@
 #define USERNAME    "iot-2023@di-ttn-iot-2023"
 #define PASSWORD    "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 
-
-
 // Set up variables
 // char topic[256];
 // sprintf(topic, "devices/%s/data/", CLIENTID);
@@ -28,7 +26,17 @@
 #define MQTTCLIENT_FAILURE   -1
 #define MQTTCLIENT_DISCONNECTED   -3
 
+#define MQTTClient_connectOptions_initializer   { {'M', 'Q', 'T', 'C'}, 6, 60, 1, 1, NULL, NULL, NULL, 30, 0, NULL, 0, NULL, MQTTVERSION_DEFAULT, {NULL, 0, 0}, {0, NULL}, -1, 0}
+#define MQTTClient_message_initializer   { {'M', 'Q', 'T', 'M'}, 1, 0, NULL, 0, 0, 0, 0, MQTTProperties_initializer }
 
+
+
+// Sensor parameters
+static lpsxxx_param_t lps_params = {
+    .i2c = lpsxxx_params[0].i2c,
+    .addr = lpsxxx_params[0].addr,
+    .rate = LPSXXX_RATE_1HZ,
+}
 
 // Sensors
 static lpsxxx_t lpsxxx;
@@ -52,7 +60,7 @@ static char stack_size[THREAD_STACKSIZE_DEFAULT];
 int init_sensors(void)
 {
     // Initialize LPS331AP sensor
-    if (lpsxxx_init(&lpsxxx, &lpsxxx_params[0]) != LPSXXX_OK)
+    if (lpsxxx_init(&lpsxxx, &lps_params) != LPSXXX_OK)
     {
         perror("Failed to initialize sensor LPS331AP");
     }
@@ -139,7 +147,7 @@ void publish_message(char *message)
     pubmsg.retained = 0;
 
     MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
-     printf("Waiting for up to %d seconds for publication of %s\n"
+    printf("Waiting for up to %d seconds for publication of %s\n"
             "on topic %s for client with ClientID: %s\n",
             (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
