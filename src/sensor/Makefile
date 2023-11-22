@@ -16,6 +16,6 @@ RIOTBASE ?= ../../include/RIOT
 
 CFLAGS += -Werror
 
-EXTERNAL_MODULE_DIRS += $(CURDIR)/../../include/paho.mqtt.embedded-c/
+EXTERNAL_MODULE_DIRS += $(CURDIR)/../../include/paho.mqtt.embedded-c/MQTTClient-C
 
 include $(RIOTBASE)/Makefile.include

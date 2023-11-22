@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ztimer.h"
-#include "paho_mqtt.h"
+// #include "paho_mqtt.h"
 #include "MQTTClient.h"
 
 #include "lpsxxx.h"
