@@ -51,7 +51,7 @@ static lpsxxx_params_t lps_params = {
 };
 
 // Sensor parameters
-static isl29020_params_t isl29020_params = {
+static isl29020_params_t isl_params = {
     .i2c = &isl29020_params[0].i2c,
     .addr = isl29020_params[0].addr,
     .mode = ISL29020_MODE_AMBIENT,
@@ -87,7 +87,7 @@ int init_sensors(void)
     }
 
     // Initialize ISL29020 sensor
-    if (isl29020_init(&isl29020, &isl29020_params[0]) != 0)
+    if (isl29020_init(&isl29020, &isl_params) != 0)
     {
         perror("Failed to initialize sensor LPS331AP");
         return 2;
