@@ -171,17 +171,17 @@ int read_light(void)
 
 static void *sensor_thread(void *arg)
 {
-    uint16_t temp, pres, light;
-    char *message;
     (void)arg;
+    uint16_t temp, pres, light;
+    // char *message;
     while (1)
     {
         temp = read_temperature();
         pres = read_pressure();
         light = read_light();
 
-        message = create_mqtt_message(temp, pres, light);
-        publish_message(message);
+        // message = create_mqtt_message(temp, pres, light);
+        // publish_message(message);
         ztimer_sleep(ZTIMER_MSEC, 5000);
     }
     return 0;
