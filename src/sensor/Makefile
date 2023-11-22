@@ -8,7 +8,7 @@ USEMODULE += isl29020
 USEMODULE += ipv6_addr
 USEMODULE += lwip_ipv6_autoconfig
 USEMODULE += MQTTClient-C
-USEPKG += paho-mqtt
+#USEPKG += paho-mqtt
 
 FEATURES_REQUIRED += periph_i2c
 
