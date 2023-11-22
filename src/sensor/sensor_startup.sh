@@ -4,7 +4,7 @@
 ARCH=iotlab-m3
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
-  # RIOT doesn’t support the arm gcc version installed by default on the SSH frontend, e.g. 4.9.
+  # RIOT doesnt support the arm gcc version installed by default on the SSH frontend, e.g. 4.9.
   # Therefore, we use arm gcc version 9 found in /opt/
   source /opt/riot.source
 else

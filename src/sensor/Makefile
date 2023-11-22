@@ -10,9 +10,9 @@ USEMODULE += lwip_ipv6_autoconfig
 #USEMODULE += MQTTClient-C
 USEPKG += paho-mqtt
 
-FEATURES_REQUIRED += periph_uart
+FEATURES_REQUIRED += periph_i2c
 
-RIOTBASE ?= $(CURDIR)/../../include/RIOT
+RIOTBASE ?= ../../include/RIOT
 
 #EXTERNAL_MODULE_DIRS += $(CURDIR)/../../include/paho.mqtt.embedded-c/
 

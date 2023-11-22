@@ -9,19 +9,19 @@
 
 #include "isl29020.h"
 
-#define URL "eu2.thethings.network:1883"
-#define CLIENTID "1"
-#define USERNAME "iot-2023@di-ttn-iot-2023"
-#define PASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
+#define URL         "ssl://eu2.cloud.thethings.industries:1883"
+#define CLIENTID    "1"
+#define TOPIC       "devices/1/data/"
+#define QOS         1
+#define USERNAME    "iot-2023@di-ttn-iot-2023"
+#define PASSWORD    "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 
-// Initialize MQTTClient
-MQTTClient client;
 
 
 // Set up variables
-char topic[256];
-sprintf(topic, "devices/%s/data/", node_id);
-static const int QOS = 1;
+// char topic[256];
+// sprintf(topic, "devices/%s/data/", CLIENTID);
+// static const int QOS = 1;
 
 
 // Sensors
@@ -113,20 +113,33 @@ char *create_mqtt_message(uint16_t temp, uint16_t pres, uint16_t light)
 
 void publish_message(char *message)
 {
+    // const char* topic = "devices/1/data/";
+    // MQTTClient_subscribe(client, topic, qos);
+    // printf("subscribed to %s \n", topic);
+
+    // // payload the content of your message
+    // char* payload = message;
+    // int payloadlen = strlen(payload);
+    // MQTTClient_deliveryToken dt;
+    // MQTTClient_publish(client, topic, payloadlen, payload, qos, retained, &dt);
+    // printf("published to %s \n", topic);
+
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
     pubmsg.payload = message;
     pubmsg.payloadlen = strlen(message);
     pubmsg.qos = QOS;
-    MQTTClient_publishMessage(client, topic, &pubmsg, &token);
+    pubmsg.retained = 0;
+    MQTTClient_publishMessage(client, topic, &pubmsg, NULL);
     printf("Message published\n");
 }
 
 static void *sensor_thread(void *arg)
 {
+    uint16_t temp, pres, light;
+    char *message;
     (void)arg;
     while (1)
     {
-        uint16_t temp, pres, light;
         temp = read_temperature();
         pres = read_pressure();
         light = read_light();
@@ -141,16 +154,22 @@ static void *sensor_thread(void *arg)
 // Connect to MQTTClient
 void connect_mqtt()
 {
+    MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+    int rc;
     // conn_opts.keepAliveInterval = 10;
     // conn_opts.cleansession = 1;
     conn_opts.username = USERNAME;
     conn_opts.password = PASSWORD;
-    MQTTClient_connect(client, &conn_opts);
-    printf("MQTT client connected\n");
 
     MQTTClient_create(&client, URL, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    {
+        printf("Failed to connect, return code %d\n", rc);
+        exit(EXIT_FAILURE);
+    }
 }
+
 
 int main(void)
 {
