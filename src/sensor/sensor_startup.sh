@@ -16,14 +16,11 @@ make BOARD=${ARCH}
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   cp bin/${ARCH}/iot2023joonajanne.elf ~/shared/
 
+  # Make sure that the monitoring profile exists
   iotlab-profile del -n monitor_sensors_m3
   iotlab-profile addm3 -n monitor_sensors_m3 -voltage -current -power -period 8244 -avg 16
 
-  nodes=$(iotlab-experiment submit -n iot2023joonajanne -d 60 -l grenoble,m3,150-155,~/shared/iot2023joonajanne.elf,monitor_sensors_m3)
+  nodes=$(iotlab-experiment submit -n iot2023joonajanne -d 60 -l grenoble,m3,180-185,~/shared/iot2023joonajanne.elf,monitor_sensors_m3)
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
-
-  experiment_id=$(echo $nodes | jq '.id')
-
   iotlab-experiment --jmespath="items[*].network_address | sort(@)" get --nodes
-  # iotlab-experiment stop -i $experiment_id
 fi
