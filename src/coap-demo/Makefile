@@ -7,7 +7,7 @@ APPLICATION = gcoap_example
 BOARD ?= iotlab-m3
 
 # This has to be the absolute path to the RIOT base directory:
-RIOTBASE ?= ./../RIOT
+RIOTBASE ?= ../../include/RIOT
 
 # Increase from default for confirmable block2 follow-on requests
 GCOAP_RESEND_BUFS_MAX ?= 2
