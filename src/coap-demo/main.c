@@ -112,6 +112,7 @@ static ssize_t _temperature_handler(coap_pkt_t *pdu, uint8_t *buf,
     int temp_abs = temp / 100;
     temp -= temp_abs * 100;
     sprintf(response, "%2i.%02i°C", temp_abs, temp);
+    printf("Temperature: %s\n", response);
 
     /* write the temperature value in the response buffer */
     if (pdu->payload_len >= strlen(response))
@@ -142,9 +143,11 @@ static ssize_t _value_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, void *c
 
         /* write the response buffer with the request count value */
         resp_len += fmt_u16_dec((char *)pdu->payload, _value);
+        printf("COAP_GET value: %i\n", _value);
         return resp_len;
 
     case COAP_PUT:
+        printf("COAP_PUT");
     case COAP_POST:
         /* convert the payload to an integer and update the internal
            value */
@@ -153,6 +156,7 @@ static ssize_t _value_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, void *c
             char payload[6] = {0};
             memcpy(payload, (char *)pdu->payload, pdu->payload_len);
             _value = (uint16_t)strtoul(payload, NULL, 10);
+            printf("COAP_PUT value: %i\n", _value);
             return gcoap_response(pdu, buf, len, COAP_CODE_CHANGED);
         }
         else
