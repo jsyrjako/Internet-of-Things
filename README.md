@@ -18,7 +18,7 @@
 
 5. Run the project:
     - ```tähän koodia :D```
-    - ``` iotlab-experiment submit -n sensor -d 120 -l 1,archi=m3:at86rf231+site=grenoble```
+    - ```iotlab-experiment submit -n sensor -d 120 -l 1,archi=m3:at86rf231+site=grenoble```
     - ```make BOARD=iotlab-m3 IOTLAB_NODE=auto flash term```
 
 ## Project description:
