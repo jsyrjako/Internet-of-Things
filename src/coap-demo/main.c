@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2015-2016 Ken Bannister. All rights reserved.
- *
- * This file is subject to the terms and conditions of the GNU Lesser
- * General Public License v2.1. See the file LICENSE in the top level
- * directory for more details.
- */
+* Copyright (c) 2015-2016 Ken Bannister. All rights reserved.
+*
+* This file is subject to the terms and conditions of the GNU Lesser
+* General Public License v2.1. See the file LICENSE in the top level
+* directory for more details.
+*/
 
 /**
  * @ingroup     examples
@@ -167,7 +167,6 @@ static gcoap_listener_t _listener = {
     &_resources[0],
     ARRAY_SIZE(_resources),
     _encode_link,
-    NULL,
     NULL};
 
 /* Adds link format params to resource list */
