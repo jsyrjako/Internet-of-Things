@@ -147,7 +147,6 @@ static ssize_t _value_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, void *c
         return resp_len;
 
     case COAP_PUT:
-        printf("COAP_PUT");
     case COAP_POST:
         /* convert the payload to an integer and update the internal
            value */
