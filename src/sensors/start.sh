@@ -2,6 +2,8 @@
 
 BOARD=iotlab-m3
 BR_ID=180
+IPV6=2001:660:4403:0496
+TAP=69
 SENSORS=181-185
 SITE=lille
 PAN_ID=0xa48f
@@ -41,6 +43,6 @@ if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Start ethos on the border router
-  sudo ethos_uhcpd.py m3-180 tap69 2001:660:5307:3169::/64
+  sudo ethos_uhcpd.py m3-${BR_ID} tap${TAP} ${IPV6}::/64
 
 fi
