@@ -185,7 +185,7 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
     ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:ac5a:fa07:a24f:9ec3");  // Replace with your destination address
 
     /* Send the CoAP packet */
-    gcoap_req_send(buf, pdu.payload_len, &remote, &pdu, NULL);
+    gcoap_req_send(buf, pdu.payload_len, &remote, NULL, NULL);
 }
 
 static void *sensor_thread(void *arg)
