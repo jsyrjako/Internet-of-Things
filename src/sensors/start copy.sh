@@ -21,22 +21,22 @@ fi
 iotlab-experiment submit -n "sensors_ipv6" -d 120 -l ${SITE},m3,${NODES}
 iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
-# Make the sensor nodes
-make -C ./measurer/ BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID
-make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
-
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # Make sure that the monitoring profile exists
   iotlab-profile del -n monitor_sensors_m3
   iotlab-profile addm3 -n monitor_sensors_m3 -voltage -current -power -period 8244 -avg 16
   iotlab-node --update-profile monitor_sensors_m3
 
-  # Flash the sensor nodes
+  # Make the sensor nodes
+  make -C ./measurer/ BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID
   echo "Flashing Sensor Nodes"
   cp measurer/bin/${BOARD}/iot2023sensor.elf ~/shared/
   iotlab-node --flash ~/shared/iot2023sensor.elf -l ${SITE},m3,${SENSORS}
 
+  make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
+
   # Start ethos on the border router
+  echo "Starting Ethos BR:${BR_ID}, TAP:${TAP}, IPV6:${IPV6}::/64"
   sudo ethos_uhcpd.py m3-${BR_ID} tap${TAP} ${IPV6}::/64
 
 fi
