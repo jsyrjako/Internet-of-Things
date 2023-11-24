@@ -21,7 +21,7 @@ fi
 # Make the sensor nodes
 make -C ./measurer/ BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID
 
-make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-$BR_ID.$SITE.iot-lab.info flash
+make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # Make sure that the monitoring profile exists
@@ -31,13 +31,13 @@ if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # Flash the border router
   echo "Flashing Border Router"
   cp br/gnrc_border_router/bin/${ARCH}/gnrc_border_router.elf ~/shared/
-  br=$(iotlab-experiment submit -n iot2023oulu_br -d 60 -l $SITE,m3,$BR_ID,~/shared/gnrc_border_router.elf,monitor_sensors_m3)
+  iotlab-experiment submit -n iot2023oulu_br -d 60 -l ${SITE},m3,${BR_ID},~/shared/gnrc_border_router.elf,monitor_sensors_m3
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Flash the sensor nodes
   echo "Flashing Sensor Nodes"
   cp measurer/bin/${ARCH}/iot2023sensor.elf ~/shared/
-  measurers=$(iotlab-experiment submit -n iot2023oulu -d 60 -l $SITE,m3,$SENSORS,~/shared/iot2023sensor.elf,monitor_sensors_m3)
+  iotlab-experiment submit -n iot2023oulu -d 60 -l ${SITE},m3,${SENSORS},~/shared/iot2023sensor.elf,monitor_sensors_m3
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Start ethos on the border router
