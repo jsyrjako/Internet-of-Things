@@ -17,7 +17,7 @@ else
   echo "[ERROR] Not in IoT-LAB frontend"
 fi
 
-iotlab-experiment submit -n "sensors_ipv6" -d 120 -l archi=m3:at86rf231+site=$SITE+nodes_ids_list=180-185
+iotlab-experiment submit -n "sensors_ipv6" -d 120 -l m3,$SITE,180-185
 iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
 # Make the sensor nodes
