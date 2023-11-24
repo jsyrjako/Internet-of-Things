@@ -34,7 +34,7 @@ if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   echo "Flashing Sensor Nodes"
   cp measurer/bin/${BOARD}/iot2023sensor.elf ~/shared/
   iotlab-node --flash ~/shared/iot2023sensor.elf -l ${SITE},${ARCH},${SENSORS}
-  sleep(10)
+  sleep 10
 
   make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
 
