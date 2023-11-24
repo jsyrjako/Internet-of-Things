@@ -12,6 +12,7 @@
 /* Add loramac necessary includes here */
 #include "net/loramac.h"     /* core loramac definitions */
 #include "semtech_loramac.h" /* package API */
+#include "net/netdev.h"
 
 /* Declare the sx127x radio driver descriptor globally here */
 static sx127x_t sx127x;      /* The sx127x radio driver descriptor */
