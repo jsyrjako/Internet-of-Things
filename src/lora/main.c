@@ -28,7 +28,7 @@ static const uint8_t appkey[LORAMAC_APPKEY_LEN] = { 0x4D, 0x8F, 0xC9, 0x08, 0x04
 int main(void)
 {
     /* initialize the radio driver */
-    sx127x_setup(&sx127x, &sx127x_params[0], 0);
+    sx127x_setup(&sx127x, &sx127x_params[0]);
     loramac.netdev = &sx127x.netdev;
     loramac.netdev->driver = &sx127x_driver;
 
