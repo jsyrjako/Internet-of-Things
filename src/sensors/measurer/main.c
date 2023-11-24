@@ -45,13 +45,29 @@ static const coap_resource_t _resources[] = {
 };
 
 /* CoAP server */
-gcoap_listener_t _listener = {
+static gcoap_listener_t _listener = {
     &_resources[0],
     ARRAY_SIZE(_resources),
-    encode_link,
-    NULL,
-    NULL,
-};
+    _encode_link,
+    NULL};
+
+/* Adds link format params to resource list */
+static ssize_t _encode_link(const coap_resource_t *resource, char *buf,
+                            size_t maxlen, coap_link_encoder_ctx_t *context)
+{
+    ssize_t res = gcoap_encode_link(resource, buf, maxlen, context);
+
+    return res;
+}
+
+void gcoap_cli_init(void)
+{
+    gcoap_register_listener(&_listener);
+}
+
+extern int gcoap_cli_cmd(int argc, char **argv);
+extern void gcoap_cli_init(void);
+
 
 // UDP
 #define MAIN_QUEUE_SIZE     (8)
@@ -140,7 +156,7 @@ static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, v
     uint16_t pres = read_pressure();
     int light = read_light();
     snprintf(message, sizeof(message), "Temperature: %i.%u°C\nPressure: %uhPa\nLight: %d", (temp / 100), (temp % 100), pres, light);
-    return gcoap_response(pdu, buf, len, COAP_CODE_CONTENT, message, strlen(message));
+    return gcoap_response(pdu, buf, len, COAP_CODE_CONTENT);
 }
 
 static void *sensor_thread(void *arg)
@@ -176,8 +192,8 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
 
     /* Create a CoAP packet */
     coap_pkt_t pdu;
-    uint8_t buf[GCOAP_PDU_BUF_SIZE];
-    gcoap_req_init(&pdu, buf, GCOAP_PDU_BUF_SIZE, COAP_METHOD_GET, "/sensor/data");
+    uint8_t buf[CONFIG_GCOAP_PDU_BUF_SIZE];
+    gcoap_req_init(&pdu, buf, CONFIG_GCOAP_PDU_BUF_SIZE, COAP_METHOD_GET, "/sensor/data");
 
     /* Set the payload of the CoAP packet */
     size_t payload_len = strlen(message);
