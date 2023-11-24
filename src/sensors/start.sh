@@ -7,8 +7,8 @@ IPV6=2001:660:4403:0496         # IPv6 prefix               site specific
 TAP=69                          # TAP interface number      0-255
 SENSORS=181-185                 # Sensor node IDs           1-10
 SITE=grenoble                   # IoT-LAB site              lille|grenoble|saclay|strasbourg
-PAN_ID=0xa48f                   # 802.15.4 PAN ID           0x0000-0xffff
-CHANNEL=24                      # 802.15.4 channel          11-26
+PAN_ID=0xBEEF                   # 802.15.4 PAN ID           0x0000-0xffff
+CHANNEL=26                      # 802.15.4 channel          11-26
 ARCH=m3                         # Board architecture
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
