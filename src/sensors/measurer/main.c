@@ -159,6 +159,7 @@ static void *sensor_thread(void *arg)
         printf("Light: %d\n", light);
 
         send_sensor_data(temp, pres, light);
+        printf("Sensor data sent\n");
 
         ztimer_sleep(ZTIMER_MSEC, 5000);
     }
