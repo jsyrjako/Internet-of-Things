@@ -37,6 +37,22 @@ USEMODULE += isl29020
 #USEMODULE += MQTTClient
 #USEPKG += paho-mqtt
 
+
+# Increase from default for confirmable block2 follow-on requests
+GCOAP_RESEND_BUFS_MAX ?= 2
+CFLAGS += -DCONFIG_GCOAP_RESEND_BUFS_MAX=$(GCOAP_RESEND_BUFS_MAX)
+
+# Include packages that pull up and auto-init the link layer.
+# NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
+USEMODULE += netdev_default
+# Specify the mandatory networking modules
+USEMODULE += gnrc_ipv6_default
+USEMODULE += gcoap
+
+# Required by gcoap example
+# USEMODULE += od
+# USEMODULE += fmt
+
 FEATURES_REQUIRED += periph_i2c
 
 RIOTBASE ?= ../../../include/RIOT
