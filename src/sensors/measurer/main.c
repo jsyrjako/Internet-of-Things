@@ -139,10 +139,10 @@ int main(void)
     msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
     puts("RIOT network stack example application");
 
-    if (init_sensors() == 0)
-    {
-        thread_create(stack_size, sizeof(stack_size), THREAD_PRIORITY_MAIN - 1, 0, sensor_thread, NULL, "sensor_thread");
-    }
+    // if (init_sensors() == 0)
+    // {
+    //     thread_create(stack_size, sizeof(stack_size), THREAD_PRIORITY_MAIN - 1, 0, sensor_thread, NULL, "sensor_thread");
+    // }
 
     /* start shell */
     puts("All up, running the shell now");
