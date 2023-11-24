@@ -192,7 +192,7 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
     sock_udp_ep_t remote;
     // remote.family = AF_INET6;
     remote.port = 5683;
-    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:ac5a:fa07:a24f:9ec3");  // Replace with your destination address
+    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:6c36:c:d03e:4efc");  // Replace with your destination address
 
     /* Send the CoAP packet */
     gcoap_req_send(buf, pdu.payload_len, &remote, _resp_handler, NULL);
