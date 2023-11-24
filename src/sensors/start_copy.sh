@@ -1,15 +1,15 @@
 #!/bin/bash
 
-BOARD=iotlab-m3
-NODES=180-185
-BR_ID=180
-IPV6=2001:660:4403:0496
-TAP=69
-SENSORS=181-185
-SITE=lille
-PAN_ID=0xa48f
-CHANNEL=24
-ARCH=m3:at86rf231
+BOARD=iotlab-m3                 # Board architecture        iotlab-m3|iotlab-a8-m3|iotlab-a8
+NODES=180-185                   # Sensor node IDs           site specific
+BR_ID=180                       # Border router node ID     site specific
+IPV6=2001:660:4403:0496         # IPv6 prefix               site specific
+TAP=69                          # TAP interface number      0-255
+SENSORS=181-185                 # Sensor node IDs           1-10
+SITE=lille                      # IoT-LAB site              lille|grenoble|saclay|strasbourg
+PAN_ID=0xa48f                   # 802.15.4 PAN ID           0x0000-0xffff
+CHANNEL=24                      # 802.15.4 channel          11-26
+ARCH=m3                         # Board architecture
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # RIOT doesnt support the arm gcc version installed by default on the SSH frontend, e.g. 4.9.
