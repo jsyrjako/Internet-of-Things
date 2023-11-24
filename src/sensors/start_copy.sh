@@ -21,7 +21,7 @@ fi
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # Start experiment
-  iotlab-experiment submit -n "sensors_ipv6" -d 120 -l ${SITE},${ARCH},${NODES}
+  iotlab-experiment submit -n "sensors_ipv6" -d 240 -l ${SITE},${ARCH},${NODES}
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Make sure that the monitoring profile exists
