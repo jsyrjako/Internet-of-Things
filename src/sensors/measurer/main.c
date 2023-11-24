@@ -186,7 +186,7 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
 
      /* Specify the remote endpoint */
     sock_udp_ep_t remote;
-    remote.family = AF_INET6;
+    // remote.family = AF_INET6;
     remote.port = 5683;
     ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:ac5a:fa07:a24f:9ec3");  // Replace with your destination address
 

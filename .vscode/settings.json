@@ -10,6 +10,9 @@
         "lpsxxx_params.h": "c",
         "isl29020_params.h": "c",
         "coap.h": "c",
-        "gcoap.h": "c"
+        "gcoap.h": "c",
+        "udp.h": "c",
+        "nanocoap.h": "c",
+        "sock_types.h": "c"
     }
 }
