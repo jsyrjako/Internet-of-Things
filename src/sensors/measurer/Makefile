@@ -39,7 +39,7 @@ USEMODULE += isl29020
 
 FEATURES_REQUIRED += periph_i2c
 
-RIOTBASE ?= ../../include/RIOT
+RIOTBASE ?= ../../../include/RIOT
 
 # CFLAGS += -Werror
 
