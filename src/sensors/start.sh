@@ -30,13 +30,13 @@ if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
 
   # Flash the border router
   echo "Flashing Border Router"
-  cp br/gnrc_border_router/bin/${ARCH}/gnrc_border_router.elf ~/shared/
+  cp br/gnrc_border_router/bin/${BOARD}/gnrc_border_router.elf ~/shared/
   iotlab-experiment submit -n iot2023oulu_br -d 60 -l ${SITE},m3,${BR_ID},~/shared/gnrc_border_router.elf,monitor_sensors_m3
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Flash the sensor nodes
   echo "Flashing Sensor Nodes"
-  cp measurer/bin/${ARCH}/iot2023sensor.elf ~/shared/
+  cp measurer/bin/${BOARD}/iot2023sensor.elf ~/shared/
   iotlab-experiment submit -n iot2023oulu -d 60 -l ${SITE},m3,${SENSORS},~/shared/iot2023sensor.elf,monitor_sensors_m3
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
