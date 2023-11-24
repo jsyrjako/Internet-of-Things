@@ -4,7 +4,7 @@ APPLICATION = ttn-sensors
 # The default board is ST B-L072Z-LRWAN1 LoRa discovery board
 BOARD ?= b-l072z-lrwan1
 
-RIOTBASE ?= $(CURDIR)/../../RIOT
+RIOTBASE ?= ../../include/RIOT
 
 #
 # Here we add the modules that are needed
