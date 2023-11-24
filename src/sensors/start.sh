@@ -30,13 +30,15 @@ if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   iotlab-profile addm3 -n monitor_sensors_m3 -voltage -current -power -period 8244 -avg 16
 
   # Flash the border router
+  echo "Flashing Border Router"
   cp br/gnrc_border_router/bin/${ARCH}/gnrc_border_router.elf ~/shared/
-  br=$(iotlab-experiment submit -n iot2023oulu_br -d 60 -l grenoble,m3,$BR_ID,~/shared/gnrc_border_router.elf,monitor_sensors_m3)
+  br=$(iotlab-experiment submit -n iot2023oulu_br -d 60 -l $SITE,m3,$BR_ID,~/shared/gnrc_border_router.elf,monitor_sensors_m3)
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Flash the sensor nodes
+  echo "Flashing Sensor Nodes"
   cp measurer/bin/${ARCH}/iot2023sensor.elf ~/shared/
-  measurers=$(iotlab-experiment submit -n iot2023oulu -d 60 -l grenoble,m3,$SENSORS,~/shared/iot2023sensor.elf,monitor_sensors_m3)
+  measurers=$(iotlab-experiment submit -n iot2023oulu -d 60 -l $SITE,m3,$SENSORS,~/shared/iot2023sensor.elf,monitor_sensors_m3)
   iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
   # Start ethos on the border router
