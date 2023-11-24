@@ -9,6 +9,7 @@ SENSORS=181-185
 SITE=lille
 PAN_ID=0xa48f
 CHANNEL=24
+ARCH=m3:at86rf231
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # RIOT doesnt support the arm gcc version installed by default on the SSH frontend, e.g. 4.9.
@@ -18,10 +19,11 @@ else
   echo "[ERROR] Not in IoT-LAB frontend"
 fi
 
-iotlab-experiment submit -n "sensors_ipv6" -d 120 -l ${SITE},m3,${NODES}
-iotlab-experiment wait --timeout 30 --cancel-on-timeout
-
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
+  # Start experiment
+  iotlab-experiment submit -n "sensors_ipv6" -d 120 -l ${SITE},${ARCH},${NODES}
+  iotlab-experiment wait --timeout 30 --cancel-on-timeout
+
   # Make sure that the monitoring profile exists
   iotlab-profile del -n monitor_sensors_m3
   iotlab-profile addm3 -n monitor_sensors_m3 -voltage -current -power -period 8244 -avg 16
@@ -31,7 +33,7 @@ if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   make -C ./measurer/ BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID
   echo "Flashing Sensor Nodes"
   cp measurer/bin/${BOARD}/iot2023sensor.elf ~/shared/
-  iotlab-node --flash ~/shared/iot2023sensor.elf -l ${SITE},m3,${SENSORS}
+  iotlab-node --flash ~/shared/iot2023sensor.elf -l ${SITE},${ARCH},${SENSORS}
 
   make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
 
