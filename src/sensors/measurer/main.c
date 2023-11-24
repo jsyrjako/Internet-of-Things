@@ -161,6 +161,16 @@ static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, v
     return gcoap_response(pdu, buf, len, COAP_CODE_CONTENT);
 }
 
+void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, const sock_udp_ep_t *remote) {
+    (void)remote;
+
+    if (memo->state == GCOAP_MEMO_RESP) {
+        char *payload = (char *)pdu->payload;
+        printf("Response: %s\n", payload);
+    } else {
+        printf("Request failed\n");
+    }
+}
 
 void send_sensor_data(int16_t temp, uint16_t pres, int light)
 {
@@ -186,17 +196,6 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
 
     /* Send the CoAP packet */
     gcoap_req_send(buf, pdu.payload_len, &remote, _resp_handler, NULL);
-}
-
-void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, const sock_udp_ep_t *remote) {
-    (void)remote;
-
-    if (memo->state == GCOAP_MEMO_RESP) {
-        char *payload = (char *)pdu->payload;
-        printf("Response: %s\n", payload);
-    } else {
-        printf("Request failed\n");
-    }
 }
 
 static void *sensor_thread(void *arg)
