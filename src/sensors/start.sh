@@ -21,7 +21,7 @@ fi
 # Make the sensor nodes
 make -C ./measurer/ BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID
 
-make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
+make -C ./br/gnrc_border_router ETHOS_BAUDRATE=500000 BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID #IOTLAB_NODE=m3-${BR_ID}.${SITE}.iot-lab.info flash
 
 if [ -n "$IOT_LAB_FRONTEND_FQDN" ]; then
   # Make sure that the monitoring profile exists
