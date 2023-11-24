@@ -143,4 +143,4 @@ sliptty:
 endif
 
 # Set a custom channel if needed
-include $(RIOTMAKE)/default-radio-settings.inc.mk
+include $(RIOTBASE)/makefiles/default-radio-settings.inc.mk
