@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BOARD=iotlab-m3
+NODES=180-185
 BR_ID=180
 IPV6=2001:660:4403:0496
 TAP=69
@@ -17,7 +18,7 @@ else
   echo "[ERROR] Not in IoT-LAB frontend"
 fi
 
-iotlab-experiment submit -n "sensors_ipv6" -d 120 -l m3,$SITE,180-185
+iotlab-experiment submit -n "sensors_ipv6" -d 120 -l ${SITE},m3,${NODES}
 iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
 # Make the sensor nodes
