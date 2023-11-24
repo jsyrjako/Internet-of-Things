@@ -31,6 +31,26 @@
 #include "isl29020.h"
 #include "isl29020_params.h"
 
+#include "net/gcoap.h"
+
+
+/* CoAP resources */
+static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, void *ctx);
+
+/* CoAP resource list */
+static const coap_resource_t _resources[] = {
+    { "/sensor/data", COAP_GET, _sensor_data_handler, NULL },
+};
+
+/* CoAP server */
+gcoap_listener_t _listener = {
+    &_resources[0],
+    ARRAY_SIZE(_resources),
+    encode_link,
+    NULL,
+    NULL,
+};
+
 // UDP
 #define MAIN_QUEUE_SIZE     (8)
 static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
@@ -109,6 +129,18 @@ int read_light(void)
     return light;
 }
 
+static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, void *ctx)
+{
+    (void)pdu;
+    (void)ctx;
+    char message[32];
+    int16_t temp = read_temperature();
+    uint16_t pres = read_pressure();
+    int light = read_light();
+    snprintf(message, sizeof(message), "Temperature: %i.%u°C\nPressure: %uhPa\nLight: %d", (temp / 100), (temp % 100), pres, light);
+    return gcoap_response(pdu, buf, len, COAP_CODE_CONTENT, message, strlen(message));
+}
+
 static void *sensor_thread(void *arg)
 {
     (void)arg;
@@ -125,12 +157,40 @@ static void *sensor_thread(void *arg)
         printf("Temperature: %i.%u°C\n", (temp / 100), (temp % 100));
         printf("Pressure: %uhPa\n", pres);
         printf("Light: %d\n", light);
-        // message = create_mqtt_message(temp, pres, light);
-        // publish_message(message);
+
+        send_sensor_data(temp, pres, light);
+
         ztimer_sleep(ZTIMER_MSEC, 5000);
     }
     return 0;
 }
+
+void send_sensor_data(int16_t temp, uint16_t pres, int light)
+{
+   /* Format sensor data into a string */
+    char message[64];
+    snprintf(message, sizeof(message), "Temperature: %i.%u°C\nPressure: %uhPa\nLight: %d", (temp / 100), (temp % 100), pres, light);
+
+    /* Create a CoAP packet */
+    coap_pkt_t pdu;
+    uint8_t buf[GCOAP_PDU_BUF_SIZE];
+    gcoap_req_init(&pdu, buf, GCOAP_PDU_BUF_SIZE, COAP_METHOD_GET, "/sensor/data");
+
+    /* Set the payload of the CoAP packet */
+    size_t payload_len = strlen(message);
+    pdu.payload_len = payload_len;
+    memcpy(pdu.payload, message, payload_len);
+
+     /* Specify the remote endpoint */
+    sock_udp_ep_t remote;
+    remote.family = AF_INET6;
+    remote.port = COAP_PORT;
+    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:db8::1");  // Replace with your destination address
+
+    /* Send the CoAP packet */
+    gcoap_req_send(buf, pdu.payload_len + pdu.hdr_len, &remote);
+}
+
 
 int main(void)
 {
