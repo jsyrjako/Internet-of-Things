@@ -15,9 +15,8 @@ else
   echo "[ERROR] Not in IoT-LAB frontend"
 fi
 
-iotlab-experiment submit -n "riot-ipv6" -d 120 -l archi=m3:at86rf231+site=$SITE
-
-iotlab-experiment wait --timeout 30 --cancel-on-timeout
+# iotlab-experiment submit -n "sensors_ipv6" -d 120 -l archi=m3:at86rf231+site=$SITE
+# iotlab-experiment wait --timeout 30 --cancel-on-timeout
 
 # Make the sensor nodes
 make -C ./measurer/ BOARD=$BOARD DEFAULT_CHANNEL=$CHANNEL DEFAULT_PAN_ID=$PAN_ID
