@@ -37,6 +37,8 @@
 
 
 /* CoAP resources */
+// static ssize_t _encode_link(const coap_resource_t *resource, char *buf,
+//                             size_t maxlen, coap_link_encoder_ctx_t *context);
 static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, void *ctx);
 
 /* CoAP resource list */
@@ -48,17 +50,17 @@ static const coap_resource_t _resources[] = {
 static gcoap_listener_t _listener = {
     &_resources[0],
     ARRAY_SIZE(_resources),
-    _encode_link,
+    gcoap_encode_link,
     NULL};
 
 /* Adds link format params to resource list */
-static ssize_t _encode_link(const coap_resource_t *resource, char *buf,
-                            size_t maxlen, coap_link_encoder_ctx_t *context)
-{
-    ssize_t res = gcoap_encode_link(resource, buf, maxlen, context);
+// static ssize_t _encode_link(const coap_resource_t *resource, char *buf,
+//                             size_t maxlen, coap_link_encoder_ctx_t *context)
+// {
+//     ssize_t res = gcoap_encode_link(resource, buf, maxlen, context);
 
-    return res;
-}
+//     return res;
+// }
 
 void gcoap_cli_init(void)
 {
@@ -159,30 +161,6 @@ static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, v
     return gcoap_response(pdu, buf, len, COAP_CODE_CONTENT);
 }
 
-static void *sensor_thread(void *arg)
-{
-    (void)arg;
-    int16_t temp;
-    uint16_t pres;
-    int light;
-
-    // char *message;
-    while (1)
-    {
-        temp = read_temperature();
-        pres = read_pressure();
-        light = read_light();
-        printf("Temperature: %i.%u°C\n", (temp / 100), (temp % 100));
-        printf("Pressure: %uhPa\n", pres);
-        printf("Light: %d\n", light);
-
-        send_sensor_data(temp, pres, light);
-        printf("Sensor data sent\n");
-
-        ztimer_sleep(ZTIMER_MSEC, 5000);
-    }
-    return 0;
-}
 
 void send_sensor_data(int16_t temp, uint16_t pres, int light)
 {
@@ -207,9 +185,33 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
     ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:ac5a:fa07:a24f:9ec3");  // Replace with your destination address
 
     /* Send the CoAP packet */
-    gcoap_req_send(buf, pdu.payload_len + pdu.hdr_len, &remote);
+    gcoap_req_send(buf, pdu.payload_len, &remote, &pdu, NULL);
 }
 
+static void *sensor_thread(void *arg)
+{
+    (void)arg;
+    int16_t temp;
+    uint16_t pres;
+    int light;
+
+    // char *message;
+    while (1)
+    {
+        temp = read_temperature();
+        pres = read_pressure();
+        light = read_light();
+        printf("Temperature: %i.%u°C\n", (temp / 100), (temp % 100));
+        printf("Pressure: %uhPa\n", pres);
+        printf("Light: %d\n", light);
+
+        send_sensor_data(temp, pres, light);
+        printf("Sensor data sent\n");
+
+        ztimer_sleep(ZTIMER_MSEC, 5000);
+    }
+    return 0;
+}
 
 int main(void)
 {
