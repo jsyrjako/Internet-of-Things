@@ -38,20 +38,20 @@ USEMODULE += isl29020
 #USEMODULE += MQTTClient
 USEPKG += paho-mqtt
 
-USEMODULE += sock_async_event
-USEMODULE += sock_ip
-USEMODULE += sock_udp
-USEMODULE += sock_tcp
+# USEMODULE += sock_async_event
+# USEMODULE += sock_ip
+# USEMODULE += sock_udp
+# USEMODULE += sock_tcp
 
-USEMODULE += lwip_netdev
-USEMODULE += lwip
+# USEMODULE += lwip_netdev
+# USEMODULE += lwip
 
 # USEMODULE += ipv6_addr
 # USEMODULE += lwip_ipv6_autoconfig
 
 # Increase from default for confirmable block2 follow-on requests
-GCOAP_RESEND_BUFS_MAX ?= 2
-CFLAGS += -DCONFIG_GCOAP_RESEND_BUFS_MAX=$(GCOAP_RESEND_BUFS_MAX)
+# GCOAP_RESEND_BUFS_MAX ?= 2
+# CFLAGS += -DCONFIG_GCOAP_RESEND_BUFS_MAX=$(GCOAP_RESEND_BUFS_MAX)
 
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
