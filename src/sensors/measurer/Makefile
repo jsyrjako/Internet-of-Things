@@ -33,9 +33,8 @@ USEMODULE += ztimer_sec
 USEMODULE += ztimer_no_periph_rtt
 USEMODULE += lps331ap
 USEMODULE += isl29020
-#USEMODULE += ipv6_addr
-#USEMODULE += lwip_ipv6_autoconfig
-#USEMODULE += MQTTClient
+USEMODULE += ipv6_addr
+USEMODULE += lwip_ipv6_autoconfig
 USEPKG += paho-mqtt
 
 USEMODULE += sock_async_event
