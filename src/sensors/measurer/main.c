@@ -52,6 +52,7 @@
 #define MQTTPASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 #define BUF_SIZE 1024
 #define IS_CLEAN_SESSION 1
+#define IS_RETAINED_MSG                 0
 
 static unsigned char buf[BUF_SIZE];
 static unsigned char readbuf[BUF_SIZE];
@@ -242,7 +243,7 @@ static int mqtt_discon(int argc, char **argv)
     return res;
 }
 
-int mqtt_con()
+int mqtt_con(void)
 {
     char *remote_ip = ADDRESS;
     int port = MQTTPORT;
