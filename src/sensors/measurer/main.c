@@ -11,6 +11,8 @@
 #include "isl29020.h"
 #include "isl29020_params.h"
 
+#include "coap_client.h"
+
 #define MOVING_BUFFER_SIZE 6
 
 static lpsxxx_params_t lps_params = {
