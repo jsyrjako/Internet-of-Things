@@ -215,7 +215,7 @@ int mqtt_init(void)
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
     int rc;
 
-    MQTTClient_create(&client, ADDRESS, CLIENTID,
+    MQTTClient_create(&mqttclient, ADDRESS, CLIENTID,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
@@ -244,7 +244,7 @@ void mqtt_send_data(int16_t temp, uint16_t pres, int light)
     MQTTClient_publishMessage(mqttclient, TOPIC, &pubmsg, &token);
     printf("Waiting for up to %d seconds for publication of %s\n"
             "on topic %s for client with ClientID: %s\n",
-            (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+            (int)(TIMEOUT/1000), payload, TOPIC, CLIENTID);
     MQTTClient_waitForCompletion(mqttclient, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
 }
