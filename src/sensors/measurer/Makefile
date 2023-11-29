@@ -38,8 +38,8 @@ USEMODULE += isl29020
 #USEMODULE += MQTTClient
 USEPKG += paho-mqtt
 
-# USEMODULE += sock_async_event
-# USEMODULE += sock_ip
+USEMODULE += sock_async_event
+USEMODULE += sock_ip
 USEMODULE += sock_udp
 USEMODULE += sock_tcp
 
