@@ -7,6 +7,7 @@ async def main():
     request = Message(code=GET)
     request.set_request_uri('coap://[2001:660:5307:3100:e449:92fa:8265:160d]5683/temperature')
 
+
     try:
         response = await protocol.request(request).response
         print(response.payload.decode('utf-8'))
