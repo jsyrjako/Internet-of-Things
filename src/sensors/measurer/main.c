@@ -35,6 +35,14 @@
 #include "net/sock/udp.h"
 #include "net/ipv6/addr.h"
 
+// MQTT resources
+#define ADDRESS     "ssl://eu2.cloud.thethings.industries:1883"
+#define CLIENTID    "1"
+#define TOPIC       "devices/1/data/"
+#define QOS         1
+#define TIMEOUT     10000L
+#define USERNAME "iot-2023@di-ttn-iot-2023"
+#define PASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 
 /* CoAP resources */
 // static ssize_t _encode_link(const coap_resource_t *resource, char *buf,
@@ -198,12 +206,56 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
     gcoap_req_send(buf, pdu.payload_len, &remote, _resp_handler, NULL);
 }
 
+static MQTTClient mqttclient;
+
+int mqtt_init(void)
+{
+    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+    int rc;
+
+    MQTTClient_create(&client, ADDRESS, CLIENTID,
+        MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    conn_opts.keepAliveInterval = 20;
+    conn_opts.cleansession = 1;
+    conn_opts.username = USERNAME;
+    conn_opts.password = PASSWORD;
+
+    if ((rc = MQTTClient_connect(mqttclient, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    {
+        printf("Failed to connect, return code %d\n", rc);
+        return -1;
+    }
+    return 0;
+}
+
+void mqtt_send_data(int16_t temp, uint16_t pres, int light)
+{
+    MQTTClient_message pubmsg = MQTTClient_message_initializer;
+    MQTTClient_deliveryToken token;
+    char payload[50];
+
+    sprintf(payload, "Temperature: %d, Pressure: %d, Light: %d", temp, pres, light);
+    pubmsg.payload = payload;
+    pubmsg.payloadlen = strlen(payload);
+    pubmsg.qos = QOS;
+    pubmsg.retained = 0;
+    MQTTClient_publishMessage(mqttclient, TOPIC, &pubmsg, &token);
+    printf("Waiting for up to %d seconds for publication of %s\n"
+            "on topic %s for client with ClientID: %s\n",
+            (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+    MQTTClient_waitForCompletion(mqttclient, token, TIMEOUT);
+    printf("Message with delivery token %d delivered\n", token);
+}
+
+
 static void *sensor_thread(void *arg)
 {
     (void)arg;
     int16_t temp;
     uint16_t pres;
     int light;
+
+    mqtt_init();
 
     // char *message;
     while (1)
@@ -215,8 +267,8 @@ static void *sensor_thread(void *arg)
         printf("Pressure: %uhPa\n", pres);
         printf("Light: %d\n", light);
 
-        send_sensor_data(temp, pres, light);
-        printf("Sensor data sent\n");
+        //send_sensor_data(temp, pres, light);
+        mqtt_send_data(temp, pres, light);
 
         ztimer_sleep(ZTIMER_MSEC, 5000);
     }
