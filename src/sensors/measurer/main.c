@@ -35,7 +35,7 @@
 #include "net/sock/udp.h"
 #include "net/ipv6/addr.h"
 
-#include "include/MQTTClient.h"
+#include "paho-mqtt.h"
 
 // MQTT resources
 #define ADDRESS     "ssl://eu2.cloud.thethings.industries:1883"

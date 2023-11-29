@@ -13,6 +13,7 @@
         "gcoap.h": "c",
         "udp.h": "c",
         "nanocoap.h": "c",
-        "sock_types.h": "c"
+        "sock_types.h": "c",
+        "msg.h": "c"
     }
 }

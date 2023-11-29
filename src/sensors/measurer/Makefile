@@ -35,7 +35,7 @@ USEMODULE += isl29020
 #USEMODULE += ipv6_addr
 #USEMODULE += lwip_ipv6_autoconfig
 #USEMODULE += MQTTClient
-#USEPKG += paho-mqtt
+USEPKG += paho-mqtt
 
 
 # Increase from default for confirmable block2 follow-on requests
@@ -59,7 +59,7 @@ RIOTBASE ?= ../../../include/RIOT
 
 # CFLAGS += -Werror
 
-# EXTERNAL_MODULE_DIRS += $(CURDIR)/../../include/Eclipse-Paho-MQTT-C/
+# EXTERNAL_MODULE_DIRS += $(CURDIR)/include/
 
 include $(RIOTBASE)/Makefile.include
 
