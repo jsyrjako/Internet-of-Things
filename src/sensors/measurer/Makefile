@@ -46,10 +46,8 @@ USEMODULE += sock_tcp
 USEMODULE += lwip_netdev
 USEMODULE += lwip
 
-USEMODULE += ipv6_addr
-USEMODULE += lwip_ipv6_autoconfig
-
-
+# USEMODULE += ipv6_addr
+# USEMODULE += lwip_ipv6_autoconfig
 
 # Increase from default for confirmable block2 follow-on requests
 GCOAP_RESEND_BUFS_MAX ?= 2
