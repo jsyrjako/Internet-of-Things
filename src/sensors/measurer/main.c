@@ -35,6 +35,8 @@
 #include "net/sock/udp.h"
 #include "net/ipv6/addr.h"
 
+#include "MQTTClient.h"
+
 // MQTT resources
 #define ADDRESS     "ssl://eu2.cloud.thethings.industries:1883"
 #define CLIENTID    "1"
