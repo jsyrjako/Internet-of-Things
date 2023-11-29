@@ -39,22 +39,30 @@
 #include "MQTTClient.h"
 
 // MQTT resources
-#define ADDRESS     "ssl://eu2.cloud.thethings.industries:1883"
-#define CLIENTID    "1"
-#define TOPIC       "devices/1/data/"
-#define QOS         1
-#define TIMEOUT     10000L
-#define USERNAME "iot-2023@di-ttn-iot-2023"
-#define PASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
+#define ADDRESS "ssl://eu2.cloud.thethings.industries"
+#define MQTTPORT 1883
+#define CLIENTID "1"
+#define TOPIC "devices/1/data/"
+#define QOS 1
+#define TIMEOUT 10000L
+#define MQTTUSERNAME "iot-2023@di-ttn-iot-2023"
+#define MQTTPASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
+#define BUF_SIZE 1024
+
+static unsigned char buf[BUF_SIZE];
+static unsigned char readbuf[BUF_SIZE];
+
+static MQTTClient mqttclient;
+static Network mqttnetwork;
 
 /* CoAP resources */
 // static ssize_t _encode_link(const coap_resource_t *resource, char *buf,
 //                             size_t maxlen, coap_link_encoder_ctx_t *context);
-static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, void *ctx);
+static ssize_t _sensor_data_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, void *ctx);
 
 /* CoAP resource list */
 static const coap_resource_t _resources[] = {
-    { "/sensor/data", COAP_GET, _sensor_data_handler, NULL },
+    {"/sensor/data", COAP_GET, _sensor_data_handler, NULL},
 };
 
 /* CoAP server */
@@ -81,17 +89,15 @@ void gcoap_cli_init(void)
 extern int gcoap_cli_cmd(int argc, char **argv);
 extern void gcoap_cli_init(void);
 
-
 // UDP
-#define MAIN_QUEUE_SIZE     (8)
+#define MAIN_QUEUE_SIZE (8)
 static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 
 extern int udp_cmd(int argc, char **argv);
 
 static const shell_command_t shell_commands[] = {
-    { "udp", "send data over UDP and listen on UDP ports", udp_cmd },
-    { NULL, NULL, NULL }
-};
+    {"udp", "send data over UDP and listen on UDP ports", udp_cmd},
+    {NULL, NULL, NULL}};
 
 // Sensing
 static lpsxxx_params_t lps_params = {
@@ -160,7 +166,7 @@ int read_light(void)
     return light;
 }
 
-static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, void *ctx)
+static ssize_t _sensor_data_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, void *ctx)
 {
     (void)pdu;
     (void)ctx;
@@ -172,20 +178,24 @@ static ssize_t _sensor_data_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len, v
     return gcoap_response(pdu, buf, len, COAP_CODE_CONTENT);
 }
 
-void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, const sock_udp_ep_t *remote) {
+void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t *pdu, const sock_udp_ep_t *remote)
+{
     (void)remote;
 
-    if (memo->state == GCOAP_MEMO_RESP) {
+    if (memo->state == GCOAP_MEMO_RESP)
+    {
         char *payload = (char *)pdu->payload;
         printf("Response: %s\n", payload);
-    } else {
+    }
+    else
+    {
         printf("Request failed\n");
     }
 }
 
 void send_sensor_data(int16_t temp, uint16_t pres, int light)
 {
-   /* Format sensor data into a string */
+    /* Format sensor data into a string */
     char message[64];
     snprintf(message, sizeof(message), "Temperature: %i.%u°C\nPressure: %uhPa\nLight: %d", (temp / 100), (temp % 100), pres, light);
 
@@ -199,57 +209,112 @@ void send_sensor_data(int16_t temp, uint16_t pres, int light)
     pdu.payload_len = payload_len;
     memcpy(pdu.payload, message, payload_len);
 
-     /* Specify the remote endpoint */
+    /* Specify the remote endpoint */
     sock_udp_ep_t remote;
     // remote.family = AF_INET6;
     remote.port = 5683;
-    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:6c36:c:d03e:4efc");  // Replace with your destination address
+    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr.ipv6, "2001:660:4403:496:6c36:c:d03e:4efc"); // Replace with your destination address
 
     /* Send the CoAP packet */
     gcoap_req_send(buf, pdu.payload_len, &remote, _resp_handler, NULL);
 }
 
-static MQTTClient mqttclient;
+static int mqtt_discon(int argc, char **argv)
+{
+    (void)argc;
+    (void)argv;
+
+    int res = MQTTDisconnect(&mqttclient);
+    if (res < 0) {
+        printf("MQTT: Unable to disconnect\n");
+    }
+    else {
+        printf("MQTT: Disconnect successful\n");
+    }
+
+    NetworkDisconnect(&mqttnetwork);
+    return res;
+}
+
+int mqtt_con()
+{
+    char *remote_ip = ADDRESS;
+    int port = MQTTPORT;
+    int ret = -1;
+    if (mqttclient.isconnected)
+    {
+        printf("mqtt_example: client already connected, disconnecting it\n");
+        MQTTDisconnect(&mqttclient);
+        NetworkDisconnect(&mqttnetwork);
+    }
+
+    MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+    data.MQTTVersion = MQTT_VERSION_v311;
+    data.clientID.cstring = CLIENTID;
+    data.username.cstring = MQTTUSER;
+    data.password.cstring = MQTTPASSWORD;
+    data.keepAliveInterval = DEFAULT_KEEPALIVE_SEC;
+    data.cleansession = IS_CLEAN_SESSION;
+    data.willFlag = 0;
+
+    printf("MQTT: Connecting to MQTT Broker %s %d\n",
+           remote_ip, port);
+    ret = NetworkConnect(&mqttnetwork, remote_ip, port);
+    if (ret < 0)
+    {
+        printf("MQTT: Unable to connect\n");
+        return ret;
+    }
+
+    printf("user:%s clientId:%s password:%s\n", data.username.cstring,
+           data.clientID.cstring, data.password.cstring);
+    ret = MQTTConnect(&mqttclient, &data);
+    if (ret < 0)
+    {
+        printf("MQTT: Unable to connect client %d\n", ret);
+        _cmd_discon(0, NULL);
+        return ret;
+    }
+    else
+    {
+        printf("MQTT: Connection successfull\n");
+    }
+}
 
 int mqtt_init(void)
 {
-    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-    int rc;
-
-    MQTTClient_create(&mqttclient, ADDRESS, CLIENTID,
-        MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
-    conn_opts.username = USERNAME;
-    conn_opts.password = PASSWORD;
-
-    if ((rc = MQTTClient_connect(mqttclient, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", rc);
-        return -1;
-    }
-    return 0;
+    NetworkInit(&mqttnetwork);
+    MQTTClientInit(&mqttclient, &network, COMMAND_TIMEOUT_MS, buf, BUF_SIZE,
+                   readbuf,
+                   BUF_SIZE);
+    MQTTStartTask(&mqttclient);
+    mqtt_con();
 }
 
 void mqtt_send_data(int16_t temp, uint16_t pres, int light)
 {
-    MQTTClient_message pubmsg = MQTTClient_message_initializer;
-    MQTTClient_deliveryToken token;
-    char payload[50];
-
+    char str_message[64];
     sprintf(payload, "Temperature: %d, Pressure: %d, Light: %d", temp, pres, light);
-    pubmsg.payload = payload;
-    pubmsg.payloadlen = strlen(payload);
-    pubmsg.qos = QOS;
-    pubmsg.retained = 0;
-    MQTTClient_publishMessage(mqttclient, TOPIC, &pubmsg, &token);
-    printf("Waiting for up to %d seconds for publication of %s\n"
-            "on topic %s for client with ClientID: %s\n",
-            (int)(TIMEOUT/1000), payload, TOPIC, CLIENTID);
-    MQTTClient_waitForCompletion(mqttclient, token, TIMEOUT);
-    printf("Message with delivery token %d delivered\n", token);
-}
 
+    enum QoS qos = QOS0;
+    MQTTMessage message;
+    message.qos = qos;
+    message.retained = IS_RETAINED_MSG;
+    message.payload = str_message
+    message.payloadlen = strlen(message.payload);
+
+    int rc;
+    if ((rc = MQTTPublish(&mqttclient, TOPIC, &message)) < 0) {
+        printf("MQTT: Unable to publish (%d)\n", rc);
+    }
+    else {
+        printf("MQTT: Message (%s) has been published to topic %s"
+               "with QOS %d\n",
+               (char *)message.payload, TOPIC, (int)message.qos);
+    }
+
+    return rc;
+}
 
 static void *sensor_thread(void *arg)
 {
@@ -270,7 +335,7 @@ static void *sensor_thread(void *arg)
         printf("Pressure: %uhPa\n", pres);
         printf("Light: %d\n", light);
 
-        //send_sensor_data(temp, pres, light);
+        // send_sensor_data(temp, pres, light);
         mqtt_send_data(temp, pres, light);
 
         ztimer_sleep(ZTIMER_MSEC, 5000);
