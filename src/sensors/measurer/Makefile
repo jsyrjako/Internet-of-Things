@@ -22,6 +22,7 @@ USEMODULE += gnrc_icmpv6_echo
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
+USEMODULE += netdev_default
 USEMODULE += netstats_l2
 USEMODULE += netstats_ipv6
 USEMODULE += netstats_rpl
@@ -36,6 +37,18 @@ USEMODULE += isl29020
 #USEMODULE += lwip_ipv6_autoconfig
 #USEMODULE += MQTTClient
 USEPKG += paho-mqtt
+
+USEMODULE += sock_async_event
+USEMODULE += sock_ip
+USEMODULE += sock_udp
+USEMODULE += sock_tcp
+
+USEMODULE += lwip_netdev
+USEMODULE += lwip
+
+USEMODULE += ipv6_addr
+USEMODULE += lwip_ipv6_autoconfig
+
 
 
 # Increase from default for confirmable block2 follow-on requests
