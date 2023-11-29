@@ -45,9 +45,13 @@
 #define TOPIC "devices/1/data/"
 #define QOS 1
 #define TIMEOUT 10000L
+#define DEFAULT_KEEPALIVE_SEC 10
+#define COMMAND_TIMEOUT_MS 4000
+#define MQTT_VERSION_v311 4
 #define MQTTUSERNAME "iot-2023@di-ttn-iot-2023"
 #define MQTTPASSWORD "NNSXS.DHBYTCSWOJUZHSF2VR6RDOUPVGSP2LKGX4N5ZKY.4D4JR5UZGOPRNLVYZ3ADTWFU4MYYQZUPBEXHABCRWGSVUV5MVAZQ"
 #define BUF_SIZE 1024
+#define IS_CLEAN_SESSION 1
 
 static unsigned char buf[BUF_SIZE];
 static unsigned char readbuf[BUF_SIZE];
@@ -225,10 +229,12 @@ static int mqtt_discon(int argc, char **argv)
     (void)argv;
 
     int res = MQTTDisconnect(&mqttclient);
-    if (res < 0) {
+    if (res < 0)
+    {
         printf("MQTT: Unable to disconnect\n");
     }
-    else {
+    else
+    {
         printf("MQTT: Disconnect successful\n");
     }
 
@@ -251,7 +257,7 @@ int mqtt_con()
     MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
     data.MQTTVersion = MQTT_VERSION_v311;
     data.clientID.cstring = CLIENTID;
-    data.username.cstring = MQTTUSER;
+    data.username.cstring = MQTTUSERNAME;
     data.password.cstring = MQTTPASSWORD;
     data.keepAliveInterval = DEFAULT_KEEPALIVE_SEC;
     data.cleansession = IS_CLEAN_SESSION;
@@ -272,42 +278,45 @@ int mqtt_con()
     if (ret < 0)
     {
         printf("MQTT: Unable to connect client %d\n", ret);
-        _cmd_discon(0, NULL);
+        mqtt_discon(0, NULL);
         return ret;
     }
     else
     {
         printf("MQTT: Connection successfull\n");
     }
+    return (ret > 0) ? 0 : 1;
 }
 
-int mqtt_init(void)
+void mqtt_init(void)
 {
     NetworkInit(&mqttnetwork);
-    MQTTClientInit(&mqttclient, &network, COMMAND_TIMEOUT_MS, buf, BUF_SIZE,
+    MQTTClientInit(&mqttclient, &mqttnetwork, COMMAND_TIMEOUT_MS, buf, BUF_SIZE,
                    readbuf,
                    BUF_SIZE);
     MQTTStartTask(&mqttclient);
     mqtt_con();
 }
 
-void mqtt_send_data(int16_t temp, uint16_t pres, int light)
+int mqtt_send_data(int16_t temp, uint16_t pres, int light)
 {
     char str_message[64];
-    sprintf(payload, "Temperature: %d, Pressure: %d, Light: %d", temp, pres, light);
+    sprintf(str_message, "Temperature: %d, Pressure: %d, Light: %d", temp, pres, light);
 
     enum QoS qos = QOS0;
     MQTTMessage message;
     message.qos = qos;
     message.retained = IS_RETAINED_MSG;
-    message.payload = str_message
+    message.payload = str_message;
     message.payloadlen = strlen(message.payload);
 
     int rc;
-    if ((rc = MQTTPublish(&mqttclient, TOPIC, &message)) < 0) {
+    if ((rc = MQTTPublish(&mqttclient, TOPIC, &message)) < 0)
+    {
         printf("MQTT: Unable to publish (%d)\n", rc);
     }
-    else {
+    else
+    {
         printf("MQTT: Message (%s) has been published to topic %s"
                "with QOS %d\n",
                (char *)message.payload, TOPIC, (int)message.qos);
