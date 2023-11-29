@@ -21,7 +21,7 @@ void init_addresses(void)
     uint32_t unique_id = (cpuid[CPUID_LEN - 4] | (cpuid[CPUID_LEN - 2] << 7)) << 8 | cpuid[CPUID_LEN - 3];
 
     // Convert the unique identifier to a string and store it in node_id
-    snprintf(node_id, sizeof(node_id), "%08x", unique_id);
+    snprintf(node_id, sizeof(node_id), "%08lx", unique_id);
 
 
     // Set the server address
@@ -56,12 +56,12 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     }
 
     // Send the request
-    sock_udp_ep_t remote = { .family = AF_INET6, .port = COAP_SERVER_PORT, .addr.ipv6 = server_addr };
+    sock_udp_ep_t remote = { .family = AF_INET6, .port = COAP_SERVER_PORT, .addr = { .ipv6 = server_addr.u8 } };
 
     // Retry sending the request if it fails
     int retries = 0;
     while (retries < MAX_RETRANSMISSIONS) {
-        if (gcoap_req_send2(buf, len, &remote, NULL) <= 0) {
+        if (gcoap_req_send(buf, len, &remote, NULL) <= 0) {
             printf("Failed to send request, retrying...\n");
             retries++;
             ztimer_sleep(ZTIMER_MSEC, RETRANSMISSION_TIMEOUT);
