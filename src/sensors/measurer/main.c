@@ -36,6 +36,7 @@
 #include "net/ipv6/addr.h"
 
 #include "paho_mqtt.h"
+#include "MQTTClient.h"
 
 // MQTT resources
 #define ADDRESS     "ssl://eu2.cloud.thethings.industries:1883"
