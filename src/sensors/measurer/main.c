@@ -94,7 +94,6 @@ void calculate_average_light(int *avg_light)
     *avg_light = sum_light / MOVING_BUFFER_SIZE;
 }
 
-
 int init_sensors(void)
 {
     // Initialize LPS331AP sensor
@@ -163,7 +162,7 @@ static void *sensor_thread(void *arg)
     int16_t temp, avg_temp;
     uint16_t pres, avg_pres;
     int light, avg_light;
-    char tmsg[31],pmsg[31],lmsg[31]
+    char tmsg[31], pmsg[31], lmsg[31];
 
     // Call init_addresses to initialize the server address and node ID
     init_addresses();
@@ -182,7 +181,7 @@ static void *sensor_thread(void *arg)
             sprintf(tmsg, "\"temperature\":\"%i.%u\"", (avg_temp / 100), (avg_temp % 100));
             send_to_coap_server(tmsg);
         }
-        if (pres_buffer_index == 5 )
+        if (pres_buffer_index == 5)
         {
             calculate_average_temp(&avg_temp);
             printf("Avg Pres: %u hPa\n", avg_pres);

@@ -35,7 +35,7 @@ static void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, con
 }
 
 
-void send_to_coap_server(*char sensor_data)
+void send_to_coap_server(char *sensor_data)
 {
     char msg[128];
     size_t pkt_len;
