@@ -78,7 +78,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     remote.port = atoi(COAP_SERVER_PORT);
 
     // Format the sensor data into the payload
-    sprintf(msg, "{\"node_id\":\"%s\",\"temperature\":\"%i.%u\",\"pressure\":\"%u\",\"light\":\"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
+    sprintf(msg, "{\"id\":\"%s\",\"t\":\"%i.%u\",\"p\":\"%u\",\"l\":\"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
     payload_len = strlen(msg);
     printf("Sending payload: %s\n", msg);
 
