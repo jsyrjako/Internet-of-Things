@@ -38,7 +38,8 @@ static void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, con
 
 void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
 {
-    char payload[128];
+    char msg[128];
+
     ssize_t payload_len;
 
     sock_udp_ep_t remote;
@@ -72,8 +73,9 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     remote.port = atoi(COAP_SERVER_PORT);
 
     // Format the sensor data into the payload
-    payload_len = snprintf(payload, sizeof(payload), "{\"node_id\": \"%s\", \"temperature\": \"%i.%u\", \"pressure\": \"%u\", \"light\": \"%d\"}",
-                       node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
+    msg = sprintf("{\"node_id\": \"%s\", \"temperature\": \"%i.%u\", \"pressure\": \"%u\", \"light\": \"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
+    size_t payload_len = strlen(msg);
+    memcpy(pkt.payload, msg, payload_len);
 
     // Create a CoAP POST request
     coap_pkt_t pkt;
