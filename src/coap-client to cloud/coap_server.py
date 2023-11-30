@@ -8,7 +8,7 @@ import pandas
 token = "your-token"
 org = "your-org"
 host = "your-host"
-database = "iotlab"
+database = "your-database"
 
 client = InfluxDBClient3(host=host, token=token, org=org)
 
@@ -19,7 +19,7 @@ class MyResource(resource.Resource):
         payload = request.payload.decode("utf-8")
         print("Received data: " + payload)
 
-        # parse payload ('{"temperature": "25"}') using json
+        # parse payload ({"node_id": "103", "temperature": "35.7", "pressure": "1000,9", "light": "35"}) using json
         value = json.loads(payload)
         print("Json parsed: " + str(value))
 
@@ -27,20 +27,21 @@ class MyResource(resource.Resource):
         print("Pandas parsed: " + str(value))
 
         # add timestamp and sensor name to the payload and create InfluxDB point
-        value = Point("sensor_data").field("value", value["temperature"])
+        sensor_name = "node_" + value["node_id"]
+        value = Point(sensor_name).field("temperature", value["temperature"]).field("pressure", value["pressure"]).field("light", value["light"])
         print("InfluxDB point created: " + str(value))
 
         # write data to InfluxDB
         print("Writing data to InfluxDB")
         client.write(database=database, record=value)
 
-        return Message(code=CHANGED, payload=b"Updated resource")
+        return Message(code=CHANGED, payload=b"Data received")
 
     async def render_post(self, request):
         payload = request.payload.decode("utf-8")
         print(payload)
 
-        # parse payload ('{"temperature": "25"}') using json
+        # parse payload ({"node_id": "103", "temperature": "35.7", "pressure": "1000,9", "light": "35"}) using json
         value = json.loads(payload)
         print("Json parsed: " + str(value))
 
@@ -48,14 +49,15 @@ class MyResource(resource.Resource):
         print("Pandas parsed: " + str(value))
 
         # add timestamp and sensor name to the payload and create InfluxDB point
-        value = Point("sensor_data").field("value", value["temperature"])
+        sensor_name = "node_" + value["node_id"]
+        value = Point(sensor_name).field("temperature", value["temperature"]).field("pressure", value["pressure"]).field("light", value["light"])
         print("InfluxDB point created: " + str(value))
 
         # write data to InfluxDB
         print("Writing data to InfluxDB")
         client.write(database=database, record=value)
 
-        return Message(code=CHANGED, payload=b"Updated resource")
+        return Message(code=CHANGED, payload=b"Data received")
 
 
 async def main():

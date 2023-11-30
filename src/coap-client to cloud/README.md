@@ -18,6 +18,14 @@ Activate venv
 Install requirements:
 - `pip install -r requirements.txt`
 
+Create Influxdb database
+- Influxdb: https://www.influxdata.com/
+- Create database bucket: https://docs.influxdata.com/influxdb/v2/admin/buckets/create-bucket/
+- Add Python data source and get token, org, host and bucket
+- Add token, org, host and bucket to coap_server.py
+
+Copy and paste python servers ipv6 address to coap_client.py
+
 Run the project
 - `python main.py`
 
