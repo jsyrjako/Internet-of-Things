@@ -48,7 +48,6 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     char *iface = ipv6_addr_split_iface(COAP_SERVER_IPV6_ADDR_STR);
     if (!iface) {
         if (gnrc_netif_numof() == 1) {
-            /* assign the single interface found in gnrc_netif_numof() */
             remote.netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
         }
         else {
@@ -63,8 +62,13 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
         }
         remote.netif = pid;
     }
-    memcpy(&remote->addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
-    // memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
+
+    if ((remote.netif == SOCK_ADDR_ANY_NETIF) && ipv6_addr_is_link_local(&server_addr)) {
+        puts("gcoap_cli: must specify interface for link local target");
+        return;
+    }
+
+    memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
     remote.port = atoi(COAP_SERVER_PORT);
 
     // Format the sensor data into the payload
