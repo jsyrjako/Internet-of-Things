@@ -125,6 +125,7 @@ int16_t read_temperature(void)
     {
         temp_to_buffer(temp);
     }
+    ztimer_sleep(ZTIMER_MSEC, 100);
     return temp;
 }
 
@@ -139,6 +140,7 @@ uint16_t read_pressure(void)
     {
         pres_to_buffer(pres);
     }
+    ztimer_sleep(ZTIMER_MSEC, 100);
     return pres;
 }
 
@@ -153,6 +155,7 @@ int read_light(void)
     {
         light_to_buffer(light);
     }
+    ztimer_sleep(ZTIMER_MSEC, 100);
     return light;
 }
 
