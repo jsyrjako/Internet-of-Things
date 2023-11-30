@@ -6,7 +6,7 @@ COAP_SERVER_IPV6_ADDR ?= "2001:14ba:a819:5a01:4159:583e:cc58:2240"
 BOARD ?= iotlab-m3
 
 USEMODULE += netdev_default
-USEMODULE += auto_init_gnrc_netif,
+USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_ipv6_default
 USEMODULE += gcoap
 USEMODULE += od
@@ -31,6 +31,8 @@ FEATURES_REQUIRED += periph_i2c
 RIOTBASE ?= ../../../include/RIOT
 
 CFLAGS += -DCOAP_SERVER_IPV6_ADDR=\"$(COAP_SERVER_IPV6_ADDR)\"
+
+ifndef CONFIG_KCONFIG_MODULE_GCOAP
 
 include $(RIOTBASE)/Makefile.include
 
