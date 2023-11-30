@@ -8,9 +8,10 @@ import pandas
 token = "your-token"
 org = "your-org"
 host = "your-host"
+database = "iotlab"
 
 client = InfluxDBClient3(host=host, token=token, org=org)
-database = "iotlab"
+
 
 
 class MyResource(resource.Resource):
