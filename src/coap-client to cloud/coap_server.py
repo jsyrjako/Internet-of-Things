@@ -1,10 +1,11 @@
 import asyncio
-from aiocoap import resource, Message, CHANGED, GET, PUT, Context
-import os, time
+from aiocoap import resource, Message, CHANGED, GET, Context
 from influxdb_client_3 import InfluxDBClient3, Point
 import json
 import pandas
 
+
+# InfluxDB configuration
 token = "your-token"
 org = "your-org"
 host = "your-host"
@@ -12,7 +13,8 @@ database = "your-database"
 
 client = InfluxDBClient3(host=host, token=token, org=org)
 
-
+# IPv6 address of the python server
+your_ipv6_address = "your-ipv6-address"
 
 class MyResource(resource.Resource):
     async def render_put(self, request):
@@ -72,7 +74,7 @@ async def main():
     root = resource.Site()
     root.add_resource(("sensor_data",), MyResource())
     protocol = await context.create_server_context(
-        root, bind=("<your-ipv6-address>", 5683)
+        root, bind=(your_ipv6_address, 5683)
     )
 
     try:
