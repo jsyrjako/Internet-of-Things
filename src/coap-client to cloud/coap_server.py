@@ -1,57 +1,46 @@
 import asyncio
-from aiocoap import resource, Message, CHANGED, GET, PUT, Context
-import os, time
+from aiocoap import resource, Message, CHANGED, GET
+import aiocoap
 from influxdb_client_3 import InfluxDBClient3, Point
 import json
-import pandas
 
-token = "your-token"
-org = "your-org"
-host = "your-host"
-database = "your-database"
+
+token = "your_token"
+org = "your_org"
+host = "your_host"
+database = "your_database"
 
 client = InfluxDBClient3(host=host, token=token, org=org)
 
+your_host = "your_host"
 
 
-class MyResource(resource.Resource):
-    async def render_put(self, request):
-        payload = request.payload.decode("utf-8")
-        print("Received data: " + payload)
-
-        # parse payload ({"node_id": "103", "temperature": "35.7", "pressure": "1000,9", "light": "35"}) using json
-        value = json.loads(payload)
-        print("Json parsed: " + str(value))
-
-        value = pandas.read_json(payload, typ="series")
-        print("Pandas parsed: " + str(value))
-
-        # add timestamp and sensor name to the payload and create InfluxDB point
-        sensor_name = "node_" + value["node_id"]
-        value = Point(sensor_name).field("temperature", value["temperature"]).field("pressure", value["pressure"]).field("light", value["light"])
-        print("InfluxDB point created: " + str(value))
-
-        # write data to InfluxDB
-        print("Writing data to InfluxDB")
-        client.write(database=database, record=value)
-
-        return Message(code=CHANGED, payload=b"Data received")
-
+class SensorMeasurement(resource.Resource):
     async def render_post(self, request):
+        print("Received data: " + str(request.payload))
+
         payload = request.payload.decode("utf-8")
-        print(payload)
 
-        # parse payload ({"node_id": "103", "temperature": "35.7", "pressure": "1000,9", "light": "35"}) using json
+        # parse payload
         value = json.loads(payload)
-        print("Json parsed: " + str(value))
 
-        value = pandas.read_json(payload, typ="series")
-        print("Pandas parsed: " + str(value))
+        # sensor name is node_<id>_<measurement_type> example: {"node_id": "123", "temperature": "25"} -> node_123_temperature
+        key = [key for key in value.keys()][1]
+        print("Measurement type: " + key)
+        node_id = str(value["id"])
+        sensor_name = "node_" + value["id"] + "_" + key
+        print("Sensor name: " + sensor_name)
 
-        # add timestamp and sensor name to the payload and create InfluxDB point
-        sensor_name = "node_" + value["node_id"]
-        value = Point(sensor_name).field("temperature", value["temperature"]).field("pressure", value["pressure"]).field("light", value["light"])
-        print("InfluxDB point created: " + str(value))
+        value = float(value[key])
+
+        # create InfluxDB point
+        value = (
+            Point(sensor_name)
+            .field("value", value)
+            .tag("sensor", sensor_name)
+            .tag("node_id", node_id)
+            .tag("measurement_type", key)
+        )
 
         # write data to InfluxDB
         print("Writing data to InfluxDB")
@@ -61,19 +50,14 @@ class MyResource(resource.Resource):
 
 
 async def main():
-    # Create CoAP client
-    context = await Context.create_client_context()
-
     # Set the server address to localhost on IPv6 and port 5683
     request = Message(code=GET)
     request.set_request_uri("coap://[::1]:5683")
 
     # Listen for incoming requests
     root = resource.Site()
-    root.add_resource(("sensor_data",), MyResource())
-    protocol = await context.create_server_context(
-        root, bind=("<your-ipv6-address>", 5683)
-    )
+    root.add_resource(("sensor_data",), SensorMeasurement())
+    await aiocoap.Context.create_server_context(root, bind=(your_host, 5683))
 
     try:
         # Run the event loop indefinitely
@@ -81,6 +65,8 @@ async def main():
         await asyncio.Future()
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        print("Failed to run server: " + str(e))
     finally:
         # Clean up resources
         protocol.shutdown()
