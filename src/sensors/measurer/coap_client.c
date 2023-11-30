@@ -69,18 +69,17 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
         return;
     }
 
-    memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
-    remote.port = atoi(COAP_SERVER_PORT);
-
-    // Format the sensor data into the payload
-    msg = sprintf("{\"node_id\": \"%s\", \"temperature\": \"%i.%u\", \"pressure\": \"%u\", \"light\": \"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
-    size_t payload_len = strlen(msg);
-    memcpy(pkt.payload, msg, payload_len);
-
     // Create a CoAP POST request
     coap_pkt_t pkt;
     uint8_t buf[CONFIG_GCOAP_PDU_BUF_SIZE];
     size_t len;
+
+    memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
+    remote.port = atoi(COAP_SERVER_PORT);
+
+    // Format the sensor data into the payload
+    sprintf(msg, "{\"node_id\": \"%s\", \"temperature\": \"%i.%u\", \"pressure\": \"%u\", \"light\": \"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
+    payload_len = strlen(msg);
 
     len = gcoap_request(&pkt, &buf[0], CONFIG_GCOAP_PDU_BUF_SIZE, COAP_METHOD_POST, COAP_SERVER_PATH);
     if (len == 0) {
@@ -90,7 +89,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
 
     // Add payload to the request
     if (payload_len > 0) {
-        memcpy(pkt.payload, payload, payload_len);
+        memcpy(pkt.payload, msg, payload_len);
         len += payload_len;
     }
 
