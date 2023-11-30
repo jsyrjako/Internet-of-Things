@@ -58,21 +58,39 @@ void light_to_buffer(int light)
     light_buffer_index = (light_buffer_index + 1) % MOVING_BUFFER_SIZE;
 }
 
-void calculate_average(int16_t *avg_temp, uint16_t *avg_pres, int *avg_light)
+void calculate_average_temp(int16_t *avg_temp)
 {
     int16_t sum_temp = 0;
-    uint16_t sum_pres = 0;
-    int sum_light = 0;
 
     for (int i = 0; i < MOVING_BUFFER_SIZE; i++)
     {
         sum_temp += temp_buffer[i];
-        sum_pres += pres_buffer[i];
-        sum_light += light_buffer[i];
     }
 
     *avg_temp = sum_temp / MOVING_BUFFER_SIZE;
+}
+
+void calculate_average_pres(uint16_t *avg_pres)
+{
+    uint16_t sum_pres = 0;
+
+    for (int i = 0; i < MOVING_BUFFER_SIZE; i++)
+    {
+        sum_pres += pres_buffer[i];
+    }
+
     *avg_pres = sum_pres / MOVING_BUFFER_SIZE;
+}
+
+void calculate_average_light(int *avg_light)
+{
+    int sum_light = 0;
+
+    for (int i = 0; i < MOVING_BUFFER_SIZE; i++)
+    {
+        sum_light += light_buffer[i];
+    }
+
     *avg_light = sum_light / MOVING_BUFFER_SIZE;
 }
 
@@ -88,13 +106,15 @@ int init_sensors(void)
     // Initialize ISL29020 sensor
     if (isl29020_init(&isl29020, &isl_params) != 0)
     {
-        perror("Failed to initialize sensor LPS331AP");
+        perror("Failed to initialize sensor ISL29020");
         return 2;
     }
+    // Sleep
+    ztimer_sleep(ZTIMER_MSEC, 1000);
     return 0;
 }
 
-int read_temperature(void)
+int16_t read_temperature(void)
 {
     int16_t temp;
     if (lpsxxx_read_temp(&lpsxxx, &temp) != LPSXXX_OK)
@@ -105,10 +125,11 @@ int read_temperature(void)
     {
         temp_to_buffer(temp);
     }
+    ztimer_sleep(ZTIMER_MSEC, 100);
     return temp;
 }
 
-int read_pressure(void)
+uint16_t read_pressure(void)
 {
     uint16_t pres;
     if (lpsxxx_read_pres(&lpsxxx, &pres) != LPSXXX_OK)
@@ -119,6 +140,7 @@ int read_pressure(void)
     {
         pres_to_buffer(pres);
     }
+    ztimer_sleep(ZTIMER_MSEC, 100);
     return pres;
 }
 
@@ -133,6 +155,7 @@ int read_light(void)
     {
         light_to_buffer(light);
     }
+    ztimer_sleep(ZTIMER_MSEC, 100);
     return light;
 }
 
@@ -142,6 +165,7 @@ static void *sensor_thread(void *arg)
     int16_t temp, avg_temp;
     uint16_t pres, avg_pres;
     int light, avg_light;
+    char tmsg[31], pmsg[31], lmsg[31];
 
     // Call init_addresses to initialize the server address and node ID
     init_addresses();
@@ -153,15 +177,27 @@ static void *sensor_thread(void *arg)
         light = read_light();
         printf("Temperature: %i.%u °C, Pressure: %u hPa, Light: %d lux\n", (temp / 100), (temp % 100), pres, light);
 
-        if (temp_buffer_index == 5 || pres_buffer_index == 5 || light_buffer_index == 5)
+        if (temp_buffer_index == 5 )
         {
-            calculate_average(&avg_temp, &avg_pres, &avg_light);
-            printf("Avg Temp: %i.%u °C, Avg Pres: %u hPa, Avg Light: %d lux\n", (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
-
-            // Send average values with CoAP
-            send_to_coap_server(avg_temp, avg_pres, avg_light);
+            calculate_average_temp(&avg_temp);
+            printf("Avg Temp: %i.%u °C, \n", (avg_temp / 100), (avg_temp % 100));
+            sprintf(tmsg, "\"temperature\":\"%i.%u\"", (avg_temp / 100), (avg_temp % 100));
+            send_to_coap_server(tmsg);
         }
-
+        if (pres_buffer_index == 5)
+        {
+            calculate_average_pres(&avg_pres);
+            printf("Avg Pres: %u hPa\n", avg_pres);
+            sprintf(pmsg, "\"pressure\":\"%u\"", avg_pres);
+            send_to_coap_server(pmsg);
+        }
+        if (light_buffer_index == 5)
+        {
+            calculate_average_light(&avg_light);
+            printf("Avg Light: %d lux\n", avg_light);
+            sprintf(lmsg, "\"light\":\"%d\"", avg_light);
+            send_to_coap_server(lmsg);
+        }
         ztimer_sleep(ZTIMER_MSEC, 5000);
     }
     return 0;
