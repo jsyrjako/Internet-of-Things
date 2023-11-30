@@ -41,7 +41,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     char msg[128];
 
     ssize_t pkt_len;
-    size_t payload_len;
+    ssize_t payload_len;
 
     sock_udp_ep_t remote;
     remote.family = AF_INET6;
