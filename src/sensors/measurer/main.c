@@ -174,7 +174,7 @@ static void *sensor_thread(void *arg)
         light = read_light();
         printf("Temperature: %i.%u °C, Pressure: %u hPa, Light: %d lux\n", (temp / 100), (temp % 100), pres, light);
 
-        if (temp_buffer_index == 5 || pres_buffer_index == 5 || light_buffer_index == 5)
+        if (temp_buffer_index == 5 )
         {
             calculate_average_temp(&avg_temp);
             printf("Avg Temp: %i.%u °C, \n", (avg_temp / 100), (avg_temp % 100));
@@ -183,14 +183,14 @@ static void *sensor_thread(void *arg)
         }
         if (pres_buffer_index == 5)
         {
-            calculate_average_temp(&avg_temp);
+            calculate_average_pres(&avg_pres);
             printf("Avg Pres: %u hPa\n", avg_pres);
             sprintf(pmsg, "\"pressure\":\"%u\"", avg_pres);
             send_to_coap_server(pmsg);
         }
         if (light_buffer_index == 5)
         {
-            calculate_average_temp(&avg_temp);
+            calculate_average_light(&avg_light);
             printf("Avg Light: %d lux\n", avg_light);
             sprintf(lmsg, "\"light\":\"%d\"", avg_light);
             send_to_coap_server(lmsg);
