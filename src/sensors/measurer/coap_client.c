@@ -93,7 +93,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     pkt_len = coap_opt_finish(&pkt, COAP_OPT_FINISH_PAYLOAD);
 
     // Add payload to the request
-    if (pkt.payload > payload_len) {
+    if (CONFIG_GCOAP_PDU_BUF_SIZE - pkt_len > payload_len) {
         memcpy(pkt.payload, msg, payload_len);
         pkt_len += payload_len;
     }
