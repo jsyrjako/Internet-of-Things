@@ -8,7 +8,7 @@
 #define MAX_RETRANSMISSIONS 3
 #define RETRANSMISSION_TIMEOUT 5000 // ms
 
-char node_id[9];
+char node_id[4];
 ipv6_addr_t server_addr;
 
 void init_addresses(void)
@@ -78,7 +78,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     remote.port = atoi(COAP_SERVER_PORT);
 
     // Format the sensor data into the payload
-    sprintf(msg, "{\"node_id\": \"%s\", \"temperature\": \"%i.%u\", \"pressure\": \"%u\", \"light\": \"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
+    sprintf(msg, "{\"node_id\":\"%s\",\"temperature\":\"%i.%u\",\"pressure\":\"%u\",\"light\":\"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
     payload_len = strlen(msg);
     printf("Sending payload: %s\n", msg);
 
