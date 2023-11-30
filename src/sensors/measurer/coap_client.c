@@ -3,7 +3,7 @@
 #include "periph/cpuid.h"
 
 #define COAP_SERVER_IPV6_ADDR_STR (COAP_SERVER_IPV6_ADDR)
-#define COAP_SERVER_PORT 5683
+#define COAP_SERVER_PORT "5683"
 #define COAP_SERVER_PATH "/sensor_data"
 #define MAX_RETRANSMISSIONS 3
 #define RETRANSMISSION_TIMEOUT 5000 // ms
@@ -41,6 +41,32 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     char payload[128];
     ssize_t payload_len;
 
+    sock_udp_ep_t remote;
+    remote->family = AF_INET6;
+
+    /* parse for interface */
+    char *iface = ipv6_addr_split_iface(COAP_SERVER_IPV6_ADDR_STR);
+    if (!iface) {
+        if (gnrc_netif_numof() == 1) {
+            /* assign the single interface found in gnrc_netif_numof() */
+            remote->netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
+        }
+        else {
+            remote->netif = SOCK_ADDR_ANY_NETIF;
+        }
+    }
+    else {
+        int pid = atoi(iface);
+        if (gnrc_netif_get_by_pid(pid) == NULL) {
+            puts("gcoap_cli: interface not valid");
+            return false;
+        }
+        remote->netif = pid;
+    }
+
+    memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
+    remote.port = atoi(COAP_SERVER_PORT);
+
     // Format the sensor data into the payload
     payload_len = snprintf(payload, sizeof(payload), "{\"node_id\": \"%s\", \"temperature\": \"%i.%u\", \"pressure\": \"%u\", \"light\": \"%d\"}",
                        node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
@@ -61,10 +87,6 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
         memcpy(pkt.payload, payload, payload_len);
         len += payload_len;
     }
-
-    // Send the request
-    sock_udp_ep_t remote = { .family = AF_INET6, .port = COAP_SERVER_PORT };
-    memcpy(remote.addr.ipv6[0], &server_addr.u8[0], sizeof(addr.u8[0]));
 
     // Retry sending the request if it fails
     int retries = 0;
