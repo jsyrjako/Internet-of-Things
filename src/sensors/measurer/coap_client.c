@@ -64,7 +64,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
 
     // Send the request
     sock_udp_ep_t remote = { .family = AF_INET6, .port = COAP_SERVER_PORT };
-    memcpy(remote.addr, server_addr.u8, sizeof(remote.addr));
+    memcpy(remote.addr.ipv6, server_addr.u8, sizeof(remote.addr.ipv6));
 
     // Retry sending the request if it fails
     int retries = 0;
