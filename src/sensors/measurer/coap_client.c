@@ -59,12 +59,12 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
         int pid = atoi(iface);
         if (gnrc_netif_get_by_pid(pid) == NULL) {
             puts("gcoap_cli: interface not valid");
-            return false;
+            return;
         }
         remote.netif = pid;
     }
-
-    memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
+    memcpy(&remote->addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
+    // memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
     remote.port = atoi(COAP_SERVER_PORT);
 
     // Format the sensor data into the payload
