@@ -42,17 +42,17 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     ssize_t payload_len;
 
     sock_udp_ep_t remote;
-    remote->family = AF_INET6;
+    remote.family = AF_INET6;
 
     /* parse for interface */
     char *iface = ipv6_addr_split_iface(COAP_SERVER_IPV6_ADDR_STR);
     if (!iface) {
         if (gnrc_netif_numof() == 1) {
             /* assign the single interface found in gnrc_netif_numof() */
-            remote->netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
+            remote.netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
         }
         else {
-            remote->netif = SOCK_ADDR_ANY_NETIF;
+            remote.netif = SOCK_ADDR_ANY_NETIF;
         }
     }
     else {
@@ -61,7 +61,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
             puts("gcoap_cli: interface not valid");
             return false;
         }
-        remote->netif = pid;
+        remote.netif = pid;
     }
 
     memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
