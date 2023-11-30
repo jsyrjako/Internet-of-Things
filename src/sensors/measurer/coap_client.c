@@ -82,7 +82,7 @@ void send_to_coap_server(char *sensor_data)
     }
 
     // Format the sensor data into the payload
-    sprintf(msg, "{\"id\":\"%s\",%s}", node_id, &sensor_data);
+    sprintf(msg, "{\"id\":\"%s\",%s}", node_id, sensor_data);
     payload_len = strlen(msg);
     printf("Payload: %s\n", msg);
 
