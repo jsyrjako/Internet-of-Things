@@ -1,7 +1,7 @@
 APPLICATION = iot2023sensor
 
 # Set CoAP server IPv6 address here or override on command line using e.g. 'make COAP_SERVER_IPV6_ADDR=2001:db8::1'
-COAP_SERVER_IPV6_ADDR ?= "2001:14ba:a819:5a01:4159:583e:cc58:2240"
+COAP_SERVER_IPV6_ADDR ?= "2001:db8::1"
 
 BOARD ?= iotlab-m3
 
