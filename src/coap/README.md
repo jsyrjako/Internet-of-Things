@@ -27,7 +27,7 @@ Create Influxdb database
 Copy and paste python servers ipv6 address to coap_client.py
 
 Run the project
-- `python main.py`
+- `python coap_server.py`
 
 ### Deactivate venv
 - `deactivate`
