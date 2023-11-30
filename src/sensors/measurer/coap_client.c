@@ -23,7 +23,6 @@ void init_addresses(void)
     // Convert the unique identifier to a string and store it in node_id
     snprintf(node_id, sizeof(node_id), "%04lx", unique_id & 0xFFFF);
 
-
     // Set the server address
     ipv6_addr_from_str(&server_addr, COAP_SERVER_IPV6_ADDR_STR);
 }
@@ -36,17 +35,16 @@ static void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, con
 }
 
 
-void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
+void send_to_coap_server(*char sensor_data)
 {
     char msg[128];
-
     size_t pkt_len;
     size_t payload_len;
 
     sock_udp_ep_t remote;
     remote.family = AF_INET6;
 
-    /* parse for interface */
+    // parse for interface
     char *iface = ipv6_addr_split_iface(COAP_SERVER_IPV6_ADDR_STR);
     if (!iface) {
         if (gnrc_netif_numof() == 1) {
@@ -76,7 +74,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
 
     memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
 
-    /* parse port */
+    // Parse port
     remote.port = atoi(COAP_SERVER_PORT);
     if (remote.port == 0) {
         puts("gcoap_cli: unable to parse destination port");
@@ -84,7 +82,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     }
 
     // Format the sensor data into the payload
-    sprintf(msg, "{\"id\":\"%s\",\"t\":\"%i.%u\",\"p\":\"%u\",\"l\":\"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
+    sprintf(msg, "{\"id\":\"%s\",%s}", node_id, &sensor_data);
     payload_len = strlen(msg);
     printf("Payload: %s\n", msg);
 
