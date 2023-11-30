@@ -28,6 +28,13 @@ void init_addresses(void)
     ipv6_addr_from_str(&server_addr, COAP_SERVER_IPV6_ADDR_STR);
 }
 
+static void _resp_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu, const sock_udp_ep_t *remote)
+{
+    (void)memo;
+    (void)pdu;
+    (void)remote;
+}
+
 
 void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
 {
@@ -56,12 +63,13 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     }
 
     // Send the request
-    sock_udp_ep_t remote = { .family = AF_INET6, .port = COAP_SERVER_PORT, .addr = { .ipv6 = server_addr.u8 } };
+    sock_udp_ep_t remote = { .family = AF_INET6, .port = COAP_SERVER_PORT } };
+    memcpy(remote.addr.ipv6, server_addr.u8, sizeof(remote.addr.ipv6));
 
     // Retry sending the request if it fails
     int retries = 0;
     while (retries < MAX_RETRANSMISSIONS) {
-        if (gcoap_req_send(buf, len, &remote, NULL) <= 0) {
+        if (gcoap_req_send(buf, len, &remote, _resp_handler, NULL) <= 0) {
             printf("Failed to send request, retrying...\n");
             retries++;
             ztimer_sleep(ZTIMER_MSEC, RETRANSMISSION_TIMEOUT);
