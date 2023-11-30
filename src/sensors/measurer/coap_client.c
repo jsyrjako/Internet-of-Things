@@ -41,6 +41,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     char msg[128];
 
     ssize_t pkt_len;
+    size_t payload_len;
 
     sock_udp_ep_t remote;
     remote.family = AF_INET6;
@@ -72,7 +73,6 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     // Create a CoAP POST request
     coap_pkt_t pkt;
     uint8_t buf[CONFIG_GCOAP_PDU_BUF_SIZE];
-    size_t len;
 
     memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
 
