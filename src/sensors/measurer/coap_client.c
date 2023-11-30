@@ -8,7 +8,7 @@
 #define MAX_RETRANSMISSIONS 3
 #define RETRANSMISSION_TIMEOUT 5000 // ms
 
-char node_id[4];
+char node_id[5];
 ipv6_addr_t server_addr;
 
 void init_addresses(void)
@@ -18,10 +18,10 @@ void init_addresses(void)
     cpuid_get(cpuid);
 
     // Use the last four bytes of the CPU ID to create a unique identifier
-    uint32_t unique_id = (cpuid[CPUID_LEN - 4] | (cpuid[CPUID_LEN - 2] << 7)) << 8 | cpuid[CPUID_LEN - 3];
+    uint32_t unique_id = (cpuid[CPUID_LEN - 4] << 24) | (cpuid[CPUID_LEN - 3] << 16) | (cpuid[CPUID_LEN - 2] << 8) | cpuid[CPUID_LEN - 1];
 
     // Convert the unique identifier to a string and store it in node_id
-    snprintf(node_id, sizeof(node_id), "%08lx", unique_id);
+    snprintf(node_id, sizeof(node_id), "%04lx", unique_id & 0xFFFF);
 
 
     // Set the server address
