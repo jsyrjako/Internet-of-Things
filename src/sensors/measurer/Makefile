@@ -32,8 +32,6 @@ RIOTBASE ?= ../../../include/RIOT
 
 CFLAGS += -DCOAP_SERVER_IPV6_ADDR=\"$(COAP_SERVER_IPV6_ADDR)\"
 
-ifndef CONFIG_KCONFIG_MODULE_GCOAP
-
 include $(RIOTBASE)/Makefile.include
 
 # Set a custom channel if needed
