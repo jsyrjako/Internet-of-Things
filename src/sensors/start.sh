@@ -3,10 +3,10 @@
 BOARD=iotlab-m3                 # Board architecture        iotlab-m3|iotlab-a8-m3|iotlab-a8
 NODES=180-185                   # Sensor node IDs           site specific
 BR_ID=180                       # Border router node ID     site specific
-IPV6=2001:660:4403:0496         # IPv6 prefix               site specific
+IPV6=2001:660:5307:3169         # IPv6 prefix               site specific
 TAP=69                          # TAP interface number      0-255
 SENSORS=181-185                 # Sensor node IDs           1-10
-SITE=lille                      # IoT-LAB site              lille|grenoble|saclay|strasbourg
+SITE=grenoble                   # IoT-LAB site              lille|grenoble|saclay|strasbourg
 PAN_ID=0xFACE                   # 802.15.4 PAN ID           0x0000-0xffff
 CHANNEL=16                      # 802.15.4 channel          11-26
 ARCH=m3                         # Board architecture
