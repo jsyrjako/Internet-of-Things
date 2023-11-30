@@ -36,3 +36,15 @@ Sensors used:
 - Pressure: LPS331AP
 
 ![Architecture of the M3](./images/m3-architecture.png)
+
+
+## Set Up EC2 Instance and Assign IPv6 Address
+
+1. Create EC2 instance
+    - [Amazon Docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html)
+
+2. Create and attach IPv6 address to EC2 instance
+    - [Amazon Docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html#working-with-ipv6-addresses)
+
+3. Allow CoAP traffic to EC2 instance
+    - Allow UDP traffic on port 5683

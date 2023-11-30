@@ -2,10 +2,10 @@
 APPLICATION = gnrc_border_router
 
 # If no BOARD is found in the environment, use this default:
-BOARD ?= samr21-xpro
+BOARD ?= iotlab-m3
 
 # This has to be the absolute path to the RIOT base directory:
-RIOTBASE ?= $(CURDIR)/../../../include/RIOT
+RIOTBASE ?= ../../../../include/RIOT
 
 # Default to using ethos for providing the uplink when not on native
 UPLINK ?= ethos
@@ -143,4 +143,4 @@ sliptty:
 endif
 
 # Set a custom channel if needed
-include $(RIOTMAKE)/default-radio-settings.inc.mk
+include $(RIOTBASE)/makefiles/default-radio-settings.inc.mk

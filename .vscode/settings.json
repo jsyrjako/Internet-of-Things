@@ -8,6 +8,10 @@
         "isl29020.h": "c",
         "thread.h": "c",
         "lpsxxx_params.h": "c",
-        "isl29020_params.h": "c"
+        "isl29020_params.h": "c",
+        "gcoap.h": "c",
+        "chrono": "c",
+        "xlocale": "c",
+        "coap_client.h": "c"
     }
 }
