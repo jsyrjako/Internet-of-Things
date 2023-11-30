@@ -40,7 +40,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
 {
     char msg[128];
 
-    ssize_t payload_len;
+    ssize_t pkt_len;
 
     sock_udp_ep_t remote;
     remote.family = AF_INET6;
@@ -75,29 +75,33 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     size_t len;
 
     memcpy(&remote.addr.ipv6[0], &server_addr.u8[0], sizeof(server_addr.u8));
+
+    /* parse port */
     remote.port = atoi(COAP_SERVER_PORT);
+    if (remote.port == 0) {
+        puts("gcoap_cli: unable to parse destination port");
+        return;
+    }
 
     // Format the sensor data into the payload
     sprintf(msg, "{\"id\":\"%s\",\"t\":\"%i.%u\",\"p\":\"%u\",\"l\":\"%d\"}", node_id, (avg_temp / 100), (avg_temp % 100), avg_pres, avg_light);
     payload_len = strlen(msg);
-    printf("Sending payload: %s\n", msg);
+    printf("Payload: %s\n", msg);
 
-    len = gcoap_request(&pkt, buf, CONFIG_GCOAP_PDU_BUF_SIZE, COAP_METHOD_POST, COAP_SERVER_PATH);
-    if (len == 0) {
-        printf("Failed to initialize request\n");
-        return;
-    }
+    gcoap_req_init(&pkt, buf, CONFIG_GCOAP_PDU_BUF_SIZE, COAP_METHOD_POST, COAP_SERVER_PATH);
+    coap_opt_add_format(&pkt, COAP_FORMAT_TEXT);
+    pkt_len = coap_opt_finish(&pkt, COAP_OPT_FINISH_PAYLOAD);
 
     // Add payload to the request
-    if (payload_len > 0) {
+    if (pkt.payload > payload_len) {
         memcpy(pkt.payload, msg, payload_len);
-        len += payload_len;
+        pkt_len += payload_len;
     }
 
     // Retry sending the request if it fails
     int retries = 0;
     while (retries < MAX_RETRANSMISSIONS) {
-        if (gcoap_req_send(buf, len, &remote, _resp_handler, NULL) <= 0) {
+        if (gcoap_req_send(buf, pkt_len, &remote, _resp_handler, NULL) <= 0) {
             printf("Failed to send request, retrying...\n");
             retries++;
             ztimer_sleep(ZTIMER_MSEC, RETRANSMISSION_TIMEOUT);
