@@ -80,7 +80,7 @@ void send_to_coap_server(int16_t avg_temp, uint16_t avg_pres, int avg_light)
     uint8_t buf[CONFIG_GCOAP_PDU_BUF_SIZE];
     size_t len;
 
-    len = gcoap_request(&pkt, &buf[0], CONFIG_GCOAP_PDU_BUF_SIZE, COAP_METHOD_PUT, COAP_SERVER_PATH);
+    len = gcoap_request(&pkt, &buf[0], CONFIG_GCOAP_PDU_BUF_SIZE, COAP_METHOD_POST, COAP_SERVER_PATH);
     if (len == 0) {
         printf("Failed to initialize request\n");
         return;
