@@ -29,7 +29,7 @@
 
     - `pip install -r requirements.txt`
 
-6.  Copy and paste server's ipv6 address to:
+6.  Copy and paste server's IPv6 address to:
 
     - [config.py](config.py)
     - [/src/sensors/start.sh](/src/sensors/start.sh)
