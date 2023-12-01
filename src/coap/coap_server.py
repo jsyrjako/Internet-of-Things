@@ -1,19 +1,10 @@
 import asyncio
-from aiocoap import resource, Message, CHANGED, GET
-import aiocoap
+from aiocoap import resource, Message, CHANGED, GET, Context
 from influxdb_client_3 import InfluxDBClient3, Point
 import json
+from config import TOKEN, ORG, HOST, DATABASE, SERVER_HOST
 
-
-token = "your_token"
-org = "your_org"
-host = "your_host"
-database = "your_database"
-
-client = InfluxDBClient3(host=host, token=token, org=org)
-
-your_host = "your_host"
-
+client = InfluxDBClient3(host=HOST, token=TOKEN, org=ORG)
 
 class SensorMeasurement(resource.Resource):
     async def render_post(self, request):
@@ -24,12 +15,10 @@ class SensorMeasurement(resource.Resource):
         # parse payload
         value = json.loads(payload)
 
-        # sensor name is node_<id>_<measurement_type> example: {"node_id": "123", "temperature": "25"} -> node_123_temperature
+        # sensor name is node_<id>_<measurement_type>
         key = [key for key in value.keys()][1]
-        print("Measurement type: " + key)
         node_id = str(value["id"])
         sensor_name = "node_" + value["id"] + "_" + key
-        print("Sensor name: " + sensor_name)
 
         value = float(value[key])
 
@@ -44,8 +33,7 @@ class SensorMeasurement(resource.Resource):
 
         # write data to InfluxDB
         print("Writing data to InfluxDB")
-        client.write(database=database, record=value)
-
+        client.write(database=DATABASE, record=value)
         return Message(code=CHANGED, payload=b"Data received")
 
 
@@ -57,7 +45,7 @@ async def main():
     # Listen for incoming requests
     root = resource.Site()
     root.add_resource(("sensor_data",), SensorMeasurement())
-    await aiocoap.Context.create_server_context(root, bind=(your_host, 5683))
+    await Context.create_server_context(root, bind=(SERVER_HOST, 5683))
 
     try:
         # Run the event loop indefinitely
@@ -67,10 +55,6 @@ async def main():
         pass
     except Exception as e:
         print("Failed to run server: " + str(e))
-    finally:
-        # Clean up resources
-        protocol.shutdown()
-        context.shutdown()
 
 
 if __name__ == "__main__":
