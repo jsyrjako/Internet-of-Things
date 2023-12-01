@@ -1,12 +1,12 @@
 #!/bin/bash
 
 COAP_SERVER_IP=2001:660:5307::      # CoAP server IPv6 address  <- Change this to your own
+IPV6=2001:660:5307:3169             # IPv6 prefix               site specific
+TAP=69                              # TAP interface number      0-255
 BOARD=iotlab-m3                     # Board architecture        iotlab-m3|iotlab-a8-m3|iotlab-a8
 NODES=180-185                       # Sensor node IDs           site specific
 BR_ID=180                           # Border router node ID     site specific
-IPV6=2001:660:5307:3169             # IPv6 prefix               site specific
-TAP=69                              # TAP interface number      0-255
-SENSORS=181-185                     # Sensor node IDs           1-10
+SENSORS=181-185                     # Sensor node IDs           site specific
 SITE=grenoble                       # IoT-LAB site              lille|grenoble|saclay|strasbourg
 PAN_ID=0xface                       # 802.15.4 PAN ID           0x0000-0xffff
 CHANNEL=16                          # 802.15.4 channel          11-26

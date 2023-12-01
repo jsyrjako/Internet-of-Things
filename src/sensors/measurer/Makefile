@@ -35,4 +35,5 @@ CFLAGS += -DCOAP_SERVER_IPV6_ADDR=\"$(COAP_SERVER_IPV6_ADDR)\"
 include $(RIOTBASE)/Makefile.include
 
 # Set a custom channel if needed
+# With make command: make DEFAULT_CHANNEL=<CHANNEL> DEFAULT_PAN_ID=<PAN_ID>
 include $(RIOTBASE)/makefiles/default-radio-settings.inc.mk
