@@ -81,7 +81,13 @@ Made by:
 
 ### Architecture of the project:
 
-[Architecture](./images/architecture.png) TODO: Add the image
+![Architecture](./images/Architecture.png)
+
+1. Sensor nodes
+2. Border router
+3. CoAP server
+4. InfluxDB
+5. Grafana
 
 ### [IoT-Lab M3](https://iot-lab.github.io/docs/boards/iot-lab-m3/)
 
