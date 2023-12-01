@@ -75,13 +75,13 @@ Made by:
 
 ### Project Demo Video:
 
-[Video]
+[Video] TODO: Add the Video
 
 ## Project description:
 
 ### Architecture of the project:
 
-[Architecture](./images/architecture.png)
+[Architecture](./images/architecture.png) TODO: Add the image
 
 ### [IoT-Lab M3](https://iot-lab.github.io/docs/boards/iot-lab-m3/)
 
