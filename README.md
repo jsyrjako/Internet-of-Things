@@ -69,6 +69,10 @@ Made by:
       - Change the measurement name to match the measurement you want to visualize
       - Change the time interval to match the time interval you want to visualize
 
+    #### Stop the Sensor nodes:
+
+    - Run script `scripts/stop_experiments.sh` to stop all experiments
+
 ### Project Demo Video:
 
 [Video]
@@ -94,16 +98,3 @@ Sensors used:
 ![Architecture of the M3](./images/m3-architecture.png)
 
 Sensors are connected to the M3 via I2C bus. Measurements are read from the sensors in 5 second cycles. The sensor nodes will calculate a moving average of the last 6 measurements and send the average to the CoAP Server through border router via the 6LoWPAN network. More information about the sensors can be found in the [Sensor README](./src/sensors/README.md).
-
-## Set Up EC2 Instance and Assign IPv6 Address
-
-1. Create EC2 instance
-
-   - [Amazon Docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html)
-
-2. Create and attach IPv6 address to EC2 instance
-
-   - [Amazon Docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html#working-with-ipv6-addresses)
-
-3. Allow CoAP traffic to EC2 instance
-   - Allow UDP traffic on port 5683
