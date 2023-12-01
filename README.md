@@ -75,7 +75,8 @@ Made by:
 
 ### Project Demo Video:
 
-[Video](https://youtu.be/pqHR8kNGgiU)
+[![Video](https://img.youtube.com/vi/pqHR8kNGgiU/maxresdefault.jpg
+)](https://youtu.be/pqHR8kNGgiU)
 
 ## Project description:
 
