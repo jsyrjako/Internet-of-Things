@@ -31,9 +31,10 @@ Made by:
 5.  Run the project:
 
     #### Start the CoAP server:
+    On a local machine or on a remote server
 
     - `cd src/coap-server/`
-    - Install & Activate venv according to [instructions](src/coap-server/README.md)
+    - Install & Activate venv according to [instructions](src/coap/README.md)
     - Start server with `python coap-server.py`
 
     #### Start the Sensor nodes:
