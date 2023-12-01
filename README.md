@@ -75,7 +75,7 @@ Made by:
 
 ### Project Demo Video:
 
-[Video] TODO: Add the Video
+[Video](https://youtu.be/pqHR8kNGgiU)
 
 ## Project description:
 
